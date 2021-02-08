@@ -1,0 +1,21 @@
+/*
+    utils.m
+
+    Useful functions
+
+*/
+
+
+// Returns values of d such that X_0(d) has genus 1
+function Genus1values(n)
+S:=[11,14,15,17,19,20,21,24,27,32,36,49];
+A:={};
+_<x>:=PolynomialRing(Rationals());
+for i:=1 to #S do
+d:=S[i];
+C:=SmallModularCurve(d);
+r:=DescentInformation(QuadraticTwist(C,n));
+if r[2] ge 1 then A:=A join {d}; end if;
+end for;
+return A;
+end function;
