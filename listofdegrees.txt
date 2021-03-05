@@ -4,52 +4,36 @@ Values: genus 1: { 17, 27, 32 }
 Solved genus 1: [11,14,15,19,20,21,24,36,49];
 Solved Siksek-Ozman: 34, 38, 42, 44, 45, 51, 52, 54, 55, 56, 63, 64, 72, 75, 81.
 Solved Bruin-Najman: 22; 23; 26; 28; 29; 30; 31; 33; 35; 39; 40; 41; 46; 47; 48; 50; 59; 71;
+Solved Box: 67
 
-Need to deal with: 
+=======================================
+
+Cases we have already dealt with:
+
+64, 34, 51, 75, 81 (SO)
+24, 36, 20, 14, 21, 15 (g1)
+26, 39, 35 (impossible - TN)
+50 - maps by a degree 2 map to rank 0 curve 50 a3; X0(50) rank 0 and torsion Z/15Z over K, so done
+65: Box + oezman_sieve(5,65)
+
+=======================================
+
+Still need to deal with:
 
 Prime values
 =============
 23 - genus 2, rank 2 over K, try Quadratic Chabauty?
 43
-47
-67 - none Box
+47 - genus 4, rank 2 over K
 163
 
+Composite Values
+=============
 
-64 - none SO
-24-done g1
-36 -g1
-20 - g1
+221 - maps to rank 0 mod par
 
-26 - impossible - TN
-14 - g1
-34 - SO
-21 - g1
-15 - g1 
-39-impossible TN
-51 - none SO
-35 - impossible - TN
-65- quadratic twist of X_0(65)/w5 rank 0 elliptic curve
-75 possible - see SO
-81-SO1
-50- maps by a degree 2 map to rank 0 curve 50 a3; X0(50) rank 0 and torsion Z/15Z over K, so done?
-221 -maps to rank 0 mod par
-
-91-??  genus 7, X*0(91) positive rank EC, hyp curve positive rank
-125-??  genus 8, X_0(125)/w125 genus 2, rank 2
-169-?  genus 8,
-289-?   genus 117, maps to rank 1 EC
-119-? 119/w17 genus 2. perhaps 2 copies of X_0(17)
-
-
-
-
-Code for 65:
-E := EllipticCurve([1, 0, 0, -1, 0]);
-DescentInformation(QuadraticTwist(E,5));
-
-Code for 125:
-
-R<x> := PolynomialRing(Rationals()); 
-C := HyperellipticCurve(R![0, 0, 1, 2, 2, 2], R![1, 1, 0, 1]);
-X,pi:= SimplifiedModel(C);
+91 - genus 7, X*0(91) positive rank EC, hyp curve positive rank
+125 - genus 8, X_0(125)/w125 genus 2, rank 2
+169 - genus 8 - quotient is X_s(13)
+289 - genus 117, maps to rank 1 EC
+119 - 119/w17 genus 2. perhaps 2 copies of X_0(17). oezman sieve false
