@@ -23,6 +23,7 @@ Still need to deal with:
 Prime values
 =============
 23 - genus 2, rank 2 over K, try Quadratic Chabauty?
+37
 43
 47 - genus 4, rank 2 over K
 163
@@ -35,5 +36,5 @@ Composite Values
 91 - genus 7, X*0(91) positive rank EC, hyp curve positive rank
 125 - genus 8, X_0(125)/w125 genus 2, rank 2
 169 - genus 8 - quotient is X_s(13)
-289 - genus 117, maps to rank 1 EC
+289 - genus 17, maps to rank 1 EC
 119 - 119/w17 genus 2. perhaps 2 copies of X_0(17). oezman sieve false

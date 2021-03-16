@@ -127,3 +127,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+nether_regions_bsb.txt

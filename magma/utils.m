@@ -24,7 +24,6 @@ end function;
 E := EllipticCurve([1, 0, 0, -1, 0]);
 DescentInformation(QuadraticTwist(E,5));
 
-
 // Code for 125:
 R<x> := PolynomialRing(Rationals());
 C := HyperellipticCurve(R![0, 0, 1, 2, 2, 2], R![1, 1, 0, 1]);
