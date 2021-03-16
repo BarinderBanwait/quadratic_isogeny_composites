@@ -1,0 +1,50 @@
+///Magma:
+//This proves that X_0(n)(Q(\sqrt 5))=X_0(n)(Q)
+/////n=11,14,19,21,24
+function Genus1same(n);
+X:=SmallModularCurve(n);
+assert DescentInformation(QuadraticTwist(X,5)) eq [0,0];
+g,m:=TorsionSubgroup(X);
+g1,m1:=TorsionSubgroup(ChangeRing(X, QuadraticField(5)));
+if IsIsomorphic(g,g1) then return true; else return false; end if;
+end function;
+
+for i in {11,14,19,20,21,24,36,49} do
+assert Genus1same(i);
+end for;
+
+
+//Sage:
+// This shows that if an elliptic curve has an n-isogeny, it does not have a nk-isogeny for any k>1
+//n=11
+// There are 3 rational points on X_0(11) one corresponding to a CM point (giving 2 elliptic curves which are isogenous over Q and are also twists of each other, and a pair of isogenous non-CM points). Everything stays the same over K.
+
+K=QuadraticField(5)
+E = EllipticCurve([1, 1, 1, -305, 7888])
+E.change_ring(K)
+C=E.isogeny_class()
+jC = [E2.j_invariant() for E2 in C]
+jC
+
+EllipticCurve([0, -1, 1, -887, -10143])
+E.change_ring(K)
+C=E.isogeny_class()
+jC = [E2.j_invariant() for E2 in C]
+jC
+
+//n=14 - there is one isogeny class with 4 curves corresponding to 2 points
+
+EllipticCurve([1, -1, 0, -2, -1])
+E = EllipticCurve([1, 1, 1, -305, 7888])
+E.change_ring(K)
+C=E.isogeny_class()
+jC = [E2.j_invariant() for E2 in C]
+jC
+
+// n=19
+
+E = EllipticCurve([0, 0, 1, -13718, -619025])
+E.change_ring(K)
+C=E.isogeny_class()
+jC = [E2.j_invariant() for E2 in C]
+jC
