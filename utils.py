@@ -8,3 +8,9 @@ def split_cartan_genus(p):
     non-split Cartan modular curves"""
 
     return (1/24) * (p^2 - 8*p + 11 - 4 * kronecker_symbol(-3,p))
+
+def nonsplit_cartan_genus(p):
+    """Computes the genus of X_ns(p) from Imin Chen's "The Jacobians of
+    non-split Cartan modular curves"""
+
+    return (1/24) * (p^2 - 10*p + 23 + 6 * kronecker_symbol(-1,p) + 4 * kronecker_symbol(-3,p))
