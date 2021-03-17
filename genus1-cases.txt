@@ -13,6 +13,38 @@ for i in {11,14,19,20,21,24,36,49} do
 assert Genus1same(i);
 end for;
 
+//n=15
+//Magma:
+X:=SmallModularCurve(15);
+assert DescentInformation(QuadraticTwist(X,5)) eq [0,0];
+K<z>:=QuadraticField(5);
+X1:=ChangeRing(X,K);
+g,m:=TorsionSubgroup(X1);
+P1:=m(g.1);
+P2:=m(g.2);
+for i:=1 to 4 do
+jInvariant((2*i+1)*P2,15);
+jInvariant(P1+(2*i+1)*P2,15);
+end for;
+
+
+//Sage:
+ K.<z>=QuadraticField(5)
+a=1/2*(-16554983445*z + 37018076625)
+E=EllipticCurve_from_j(a)
+C=E.isogeny_class()
+jC = [E2.j_invariant() for E2 in C]
+jC;
+a=146329141248*z - 327201914880
+E=EllipticCurve_from_j(a)
+C=E.isogeny_class()
+jC = [E2.j_invariant() for E2 in C]
+jC;
+
+
+
+
+
 
 //Sage:
 // This shows that if an elliptic curve has an n-isogeny, it does not have a nk-isogeny for any k>1
@@ -44,6 +76,14 @@ jC
 // n=19
 
 E = EllipticCurve([0, 0, 1, -13718, -619025])
+E.change_ring(K)
+C=E.isogeny_class()
+jC = [E2.j_invariant() for E2 in C]
+jC
+
+// n=15
+
+E = EllipticCurve([1, 0, 1, -126, -552])
 E.change_ring(K)
 C=E.isogeny_class()
 jC = [E2.j_invariant() for E2 in C]
