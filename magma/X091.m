@@ -13,7 +13,7 @@
 
 load "boxozmansiksek.m";
 
-X,ws:=ModCrvQuot(91,[],[91]); //Just a few seconds.
+X,ws:=ModCrvQuot(91,[],[91]); //Just a few minutes.
 w:=ws[1];
 assert Genus(X) eq 7;
 
@@ -27,7 +27,7 @@ JFp,phi,psi:=JacobianFp(Xp);
 redDtors:=[JFp!psi(reduce(X,Xp,DD)) : DD in Dtors];
 A:=sub<JFp | redDtors>;
 
-C,projC:=CurveQuotient(AutomorphismGroup(X,[w]));
+C,projC:=CurveQuotient(AutomorphismGroup(X,[w]));  // takes a few hours
 C,h:=SimplifiedModel(C);
 XtoC:=Expand(projC*h);
 assert Genus(C) eq 2;
@@ -70,12 +70,12 @@ divs:=[D1,D2,-39*Dtors[1] - 77*Dtors[2],13*Dtors[1]+26*Dtors[2]];
 genusC:=Genus(C);
 final_A:=AbelianGroup([0,0,2,168]);
 I:=2;
-auts:=[w];
+auts:=[Transpose(Matrix(w))];
 
-deg2:=Setseq({Pullback(XtoC,Place(c_point)) : c_point in ptsC} join {Place(pt1) + Place(pt2) : pt1 in cusps, pt2 in cusps});
-deg2npb:=[Place(pt1) + Place(pt2) : pt1 in cusps, pt2 in cusps | not w(pt1) eq pt2];
-deg2pb:=[DD : DD in deg2 | not DD in deg2npb]; //We split into pullbacks and non-pullbacks.
+deg2:=Setseq({Pullback(XtoC,Place(c_point)) : c_point in ptsC} join {Place(pt1) + Place(pt2) : pt1 in cusps, pt2 in cusps});  // takes about 14 hours
+deg2npb:=[Place(pt1) + Place(pt2) : pt1 in cusps, pt2 in cusps | not w(pt1) eq pt2]; // takes several hours, less than 12
+deg2pb:=[DD : DD in deg2 | not DD in deg2npb]; //We split into pullbacks and non-pullbacks.  // takes a few hours
 
 load "quadptssieve.m";
-primes:=[11,13];
+primes:=[17, 11];
 MWSieve(deg2,primes,X,final_A,divs,auts,genusC,deg2pb,deg2npb,I,bp); //Returns true if we have indeed found all deg 2 pts.
