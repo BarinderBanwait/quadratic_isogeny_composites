@@ -3,6 +3,10 @@
 Some helpful functions
 """
 
+GENUS_ZERO_LIST = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 16, 18, 25]
+GENUS_ONE_LIST = [11,14,15,17,19,20,21,24,27,32,36,49]
+CLASS_NUMBER_ONE_DISCS = {-1, -2, -3, -7, -11, -19, -43, -67, -163}
+
 def split_cartan_genus(p):
     """Computes the genus of X_s(p) from Imin Chen's "The Jacobians of
     non-split Cartan modular curves"""
@@ -93,3 +97,38 @@ assert genus_of_quotient(56, 2) == 3
 assert genus_of_quotient(84,84) == 4
 assert genus_of_quotient(92,23) == 1
 assert genus_of_quotient(99,99) == 3
+
+
+def minimally_finite(d):
+
+    genus_one_positive_rank_list = []
+    genus_one_zero_rank_list = []
+
+    for N in GENUS_ONE_LIST:
+        label = str(N) + 'a1'
+        E = EllipticCurve(label)  # X_0(N)
+        if E.quadratic_twist(d).rank(only_use_mwrank=False) != 0:
+            genus_one_positive_rank_list.append(N)
+        else:
+            genus_one_zero_rank_list.append(N)
+
+    admissible_divisors = set(GENUS_ZERO_LIST).union(set(genus_one_positive_rank_list))
+    # print(admissible_divisors)
+    output = []
+    for N in range(11,800):  # max might be max(7^3, p^2) where p is largest prime in admissible_divisors
+        if N in {37,43, 67, 163}:
+            output.append(N)
+        elif N in genus_one_zero_rank_list or ((Gamma0(N).genus() > 1) and not ZZ(N).is_prime()):
+            if set([d for d in ZZ(N).divisors() if d != N]).issubset(admissible_divisors):
+                output.append(N)
+
+
+    return output
+
+for d in range(-20,20):
+    if ZZ(d).is_squarefree():
+        if not d in CLASS_NUMBER_ONE_DISCS:
+            if d != 1:
+                ans = minimally_finite(d)
+                large_vals = [d for d in ans if d  > 100]
+                print("d = {}  large vals = {}".format(d, large_vals))
