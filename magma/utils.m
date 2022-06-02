@@ -5,6 +5,11 @@
 
 */
 
+// Globals
+
+Genus1Values:=[11,14,15,17,19,20,21,24,27,32,36,49];
+R<x> := PolynomialRing(Rationals());
+
 
 // Returns values of d such that X_0(d) has genus 1
 function Genus1values(n)
@@ -19,6 +24,32 @@ if r[2] ge 1 then A:=A join {d}; end if;
 end for;
 return A;
 end function;
+
+procedure EllipticValues(d)
+	f := R![-d,0,1];
+	K<a> := NumberField(f);
+	for N in Genus1Values do
+		X0N := SmallModularCurve(N);
+		X0Ntw := QuadraticTwist(X0N,d);
+		if Rank(X0Ntw) eq 0 then
+			j_invs := {};
+			X0NK := BaseExtend(X0N,K);
+			Tors, m := TorsionSubgroup(X0NK);
+			num_ers:=0;
+			for P in Tors do
+				if P ne Tors!0 then
+					try
+						a_j_inv := jInvariant(m(P),N);
+						j_invs := j_invs join {a_j_inv};
+					catch e
+						num_ers:=num_ers+1;
+					end try;
+				end if;
+			end for;
+			print N, j_invs, num_ers, #Cusps(Gamma0(N));
+		end if;
+	end for;
+end procedure;
 
 // Code for 65
 E := EllipticCurve([1, 0, 0, -1, 0]);
