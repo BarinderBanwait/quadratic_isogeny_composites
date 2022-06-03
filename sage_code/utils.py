@@ -6,6 +6,9 @@ Some helpful functions
 GENUS_ZERO_LIST = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 16, 18, 25]
 GENUS_ONE_LIST = [11, 14, 15, 17, 19, 20, 21, 24, 27, 32, 36, 49]
 CLASS_NUMBER_ONE_DISCS = {-1, -2, -3, -7, -11, -19, -43, -67, -163}
+AMF2 = {26, 35, 37, 39, 43, 50, 65, 67, 91, 125, 163, 169}
+
+15, 20, 24, 27, 32, 36
 
 
 def split_cartan_genus(p):
@@ -126,10 +129,30 @@ assert genus_of_quotient(92, 23) == 1
 assert genus_of_quotient(99, 99) == 3
 
 
-def minimally_finite(d):
+def is_multiple_of(x, a_set):
 
-    genus_one_positive_rank_list = []
-    genus_one_zero_rank_list = []
+    for y in a_set:
+        if y.divides(x):
+            return True
+    return False
+
+
+def remove_multiples(a_set):
+
+    output = set()
+
+    for x in a_set:
+        aux_set = a_set - {x}
+        if not is_multiple_of(x, aux_set):
+            output.add(x)
+
+    return output
+
+
+def minimally_finite(d):
+    """This implements Algorithm 2.2"""
+    genus_one_positive_rank_list = []  # this is B(K)
+    genus_one_zero_rank_list = []  # this is S_1(K) in Algorithm 2.2
 
     for N in GENUS_ONE_LIST:
         label = str(N) + "a1"
@@ -139,21 +162,54 @@ def minimally_finite(d):
         else:
             genus_one_zero_rank_list.append(N)
 
-    admissible_divisors = set(GENUS_ZERO_LIST).union(set(genus_one_positive_rank_list))
-    # print(admissible_divisors)
-    output = []
-    for N in range(
-        11, 800
-    ):  # max might be max(7^3, p^2) where p is largest prime in admissible_divisors
-        if N in {37, 43, 67, 163}:
-            output.append(N)
-        elif N in genus_one_zero_rank_list or (
-            (Gamma0(N).genus() > 1) and not ZZ(N).is_prime()
-        ):
-            if set([d for d in ZZ(N).divisors() if d != N]).issubset(
-                admissible_divisors
-            ):
-                output.append(N)
+    output = set(genus_one_zero_rank_list).union(AMF2)
+
+    S3_prime = set()
+
+    small_prime_set = prime_range(20)
+
+    for b in genus_one_positive_rank_list:
+        for p in small_prime_set:
+            candidate = b * p
+            if not is_multiple_of(candidate, output):
+                S3_prime.add(candidate)
+
+    S3 = remove_multiples(S3_prime)
+
+    output = output.union(S3)
+    output = list(output)
+    sorted(output)
+
+    return output
+
+
+def minimally_finite_fast(genus_one_zero_rank_list):
+    """Sage is much slower than Magma with computing ranks of ECs over NFs,
+    making `minimally_finite` slow. This function gets the data for which of
+    the genus 1 modular curves have positive rank over a given quadratic field.
+    This is then much faster.
+    """
+    genus_one_positive_rank_list = [
+        N for N in GENUS_ONE_LIST if not N in genus_one_zero_rank_list
+    ]
+
+    output = set(genus_one_zero_rank_list).union(AMF2)
+
+    S3_prime = set()
+
+    small_prime_set = prime_range(20)
+
+    for b in genus_one_positive_rank_list:
+        for p in small_prime_set:
+            candidate = b * p
+            if not is_multiple_of(candidate, output):
+                S3_prime.add(candidate)
+
+    S3 = remove_multiples(S3_prime)
+
+    output = output.union(S3)
+    output = list(output)
+    sorted(output)
 
     return output
 
@@ -215,6 +271,7 @@ def is_rank_of_twist_zero(p, chi):
 
 
 def check_mwgp_same(p, d):
+    """Checks conditions (1) and (2) of Proposition 4.1"""
     chi = kronecker_character(d)
     if is_rank_of_twist_zero(p, chi):
         if is_torsion_same(p, chi):
@@ -223,54 +280,45 @@ def check_mwgp_same(p, d):
 
 
 def search_convenient_d(d_start, d_end):
+    """Searches in a range of d for whether or not d is convenient, as defined
+    in Section 3 of the paper
+    """
     for d in range(d_start, d_end):
         if ZZ(d).is_squarefree():
             if not d in CLASS_NUMBER_ONE_DISCS:
                 if d != 1:
                     try:
                         ans = minimally_finite(d)
+                        print(f"done {d}")
                     except SignalError:
                         print(f"Rank computation failed for {d}")
                         continue
                     large_vals = [d for d in ans if d > 100]
                     if sorted(large_vals) == [125, 163, 169]:
                         if check_mwgp_same(163, d):
-                            print("d = {}".format(d))
+                            print("d = {} is good".format(d))
 
 
-# E = EllipticCurve('27a2')
-# K = QuadraticField(-27)
-# EK = E.base_extend(K)
-# Delta_K = K.discriminant()
+def search_convenient_d_fast():
+    """As explained in a docstring above, Sage struggles to compute ranks,
+    sometimes even giving a SignalError! For this reason, a Magma computation
+    was run to determine, for -500 < d < 500, which of the genus 1 modular curves
+    have positive rank over Qsqrtd. The results of this computation may be found
+    in `magma_code/RankData.txt`. This function then reads this data in and
+    uses the `minimally_finite_fast` method above.
+    """
 
+    with open("magma_code/RankData.txt", "r") as the_file:
+        the_lines = the_file.read().splitlines()
 
-# for p in prime_range(100):
-#     primes_above_p = K.primes_above(p)
-#     if (len(primes_above_p) == 2) or Delta_K%p == 0:
-#         assert EK.isogenies_prime_degree(p), p
+    for a_line in the_lines:
 
-
-# E = EllipticCurve('1936f1')
-# K = QuadraticField(-11)
-# EK = E.base_extend(K)
-# Delta_K = K.discriminant()
-
-
-# for p in prime_range(60):
-#     primes_above_p = K.primes_above(p)
-#     if (len(primes_above_p) == 2) or Delta_K%p == 0:
-#         assert EK.isogenies_prime_degree(p), p
-
-
-# R.<x> = QQ[]
-# f = x^2 - x - 1
-# K.<a> = NumberField(f)
-# cm_jinvs = cm_j_invariants(K)
-# output = []
-# for j in cm_jinvs:
-#     Ej = EllipticCurve_from_j(j)
-#     ipd = Ej.isogenies_prime_degree(minimal_models=False)
-#     pdi = [phi.degree() for phi in ipd]
-#     if 47 in pdi:
-#         output.append(j)
-# output
+        d, pre_rank_zero_list = a_line.split(":")
+        d = Integer(d)
+        rank_zero_list = eval(pre_rank_zero_list)
+        rank_zero_list = [Integer(x) for x in rank_zero_list]
+        ans = minimally_finite_fast(rank_zero_list)
+        large_vals = [d for d in ans if d > 100]
+        if sorted(large_vals) == [125, 163, 169]:
+            if check_mwgp_same(163, d):
+                print("d = {} is good".format(d))

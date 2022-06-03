@@ -51,6 +51,35 @@ procedure EllipticValues(d)
 	end for;
 end procedure;
 
+Genus1Values:=[11,14,15,17,19,20,21,24,27,32,36,49];
+R<x> := PolynomialRing(Rationals());
+procedure Ranks(d)
+	f := R![-d,0,1];
+	K<a> := NumberField(f);
+	MyVals := [];
+	for N in Genus1Values do
+		X0N := SmallModularCurve(N);
+		X0Ntw := QuadraticTwist(X0N,d);
+		if Rank(X0Ntw) eq 0 then
+			MyVals := Append(MyVals, N);
+		end if;
+	end for;
+	Write("RankData.txt", Sprintf("%o: %o", d, MyVals));
+end procedure;
+
+
+for d in [500..515] do
+	if d ne 1 then
+		if d ne 0 then
+			if IsSquarefree(d) then
+				print "doing", d;
+				Ranks(d);
+			end if;
+		end if;
+	end if;
+end for;
+
+
 // Code for 65
 E := EllipticCurve([1, 0, 0, -1, 0]);
 DescentInformation(QuadraticTwist(E,5));

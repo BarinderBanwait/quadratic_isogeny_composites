@@ -77,5 +77,52 @@ deg2npb:=[Place(pt1) + Place(pt2) : pt1 in cusps, pt2 in cusps | not w(pt1) eq p
 deg2pb:=[DD : DD in deg2 | not DD in deg2npb]; //We split into pullbacks and non-pullbacks.  // takes a few hours
 
 load "quadptssieve.m";
-primes:=[17, 11];
-MWSieve(deg2,primes,X,final_A,divs,auts,genusC,deg2pb,deg2npb,I,bp); //Returns true if we have indeed found all deg 2 pts.
+primes:=[17, 11, 23, 19, 29];
+// MWSieve(deg2,primes,X,final_A,divs,auts,genusC,deg2pb,deg2npb,I,bp); //Returns true if we have indeed found all deg 2 pts.
+
+jacs:=[]; // This will be a list of J(X)(\F_p) for p in primes.
+divlist:=[[]: i in [1..#divs]]; // divlist[i] is a list of the divisors reduce(X,Xp,div[i]).
+
+
+for p in [43, 67] do
+p;
+Fp:=GF(p);
+Xpp:=ChangeRing(X,Fp);
+CGp,phi_cg,psi_cg:=ClassGroup(Xpp);
+Z:=FreeAbelianGroup(1);
+degr:=hom<CGp->Z | [ Degree(phi_cg(a))*Z.1 : a in OrderedGenerators(CGp)]>;
+JFp:=Kernel(degr); // This is isomorphic to J_X(\F_p).
+Append(~jacs,JFp);
+for i in [1..#divs] do
+Dip:=JFp!psi_cg(reduce(X,Xpp,divs[i]));
+Dipseq:=Eltseq(Dip);
+Dipseq:=Dipseq cat [0*i : i in [1..(100-#Dipseq)]]; //We convert divisors into a sequence of length 100 in order to save them in a list
+Append(~divlist[i],Dipseq);
+end for;
+end for;
+primes:=[17, 11, 23, 19, 29, 31, 37, 43, 67];
+MWSieveShort(deg2,primes,X,final_A,divs,auts,genusC,deg2pb,deg2npb,I,bp,jacs,divlist);
+
+// reset
+
+jacs:=[];
+divlist:=[[]: i in [1..#divs]];
+primes:=[43, 67, 11, 37, 17, 31, 23, 19, 29, 71];
+
+for p in primes do
+p;
+Fp:=GF(p);
+Xpp:=ChangeRing(X,Fp);
+CGp,phi_cg,psi_cg:=ClassGroup(Xpp);
+Z:=FreeAbelianGroup(1);
+degr:=hom<CGp->Z | [ Degree(phi_cg(a))*Z.1 : a in OrderedGenerators(CGp)]>;
+JFp:=Kernel(degr); // This is isomorphic to J_X(\F_p).
+Append(~jacs,JFp);
+for i in [1..#divs] do
+Dip:=JFp!psi_cg(reduce(X,Xpp,divs[i]));
+Dipseq:=Eltseq(Dip);
+Dipseq:=Dipseq cat [0*i : i in [1..(100-#Dipseq)]]; //We convert divisors into a sequence of length 100 in order to save them in a list
+Append(~divlist[i],Dipseq);
+end for;
+end for;
+MWSieveShort(deg2,primes,X,final_A,divs,auts,genusC,deg2pb,deg2npb,I,bp,jacs,divlist);

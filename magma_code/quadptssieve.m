@@ -305,3 +305,39 @@ if W eq {} then return true; end if;
 end while;
 return #W;
 end function;
+
+MWSieveShort:=function(L,primes,X,A,divs,auts,genusC,deg2pb,deg2npb,I,bp,jacs,divlist)
+
+// We now set up the sieve.
+B,iA:=sub<A|A>; // This subgroup will shrink as we consider more primes.
+W:={0*A.1}; // This will be our set of possible B-cosets in A. Will grow.
+// Together, B+W \subset A consists of the possible images of unknown (rational)
+// points in A. The map X(\Q) \to A is composition of X(\Q) \to J(X)(\Q) and
+// multiplication by integer I such that I*J(X)(\Q) \subset A.
+exclprimes:=[]; // The set of primes we have considered.
+
+while not Seqset(exclprimes) eq Seqset(primes) do
+ind:=PrimeSelector(B,iA,primes,exclprimes,jacs,divlist,X);
+p:=primes[ind]; // We select the next prime.
+Append(~exclprimes,p);
+p;
+Wp,Bp,iAp:=ChabautyInfo(L,p,X,auts,genusC,A,divs,deg2pb,deg2npb,I,bp);
+// Whatever Chabauty method we use, it should output a subgroup iAp: Bp \to A and
+// a set Wp of Bp-cosets containing the hypothetical unknown points.
+if Wp eq {} then return true; end if;
+Bnew,iBp:=sub<Bp | B meet Bp>; // We now intersect Bp+Wp and B+W.
+iAnew:=iBp*iAp;
+A0,pi0:=quo<A | iAnew(Bnew)>;
+Ap,pi0p:=quo<A0 | pi0(iAp(Bp))>;
+A1,pi01:=quo<A0 | pi0(iA(B))>;
+pi1:=pi0*pi01;
+pip:=pi0*pi0p;
+W:={x@@pi0 : x in {(pi1(y))@@pi01 +k : y in W, k in Kernel(pi01)} | pi0p(x) in pip(Wp)};
+// This is the set of Bnew-cosets containing hypothetical points that is left.
+B:=Bnew;
+iA:=iAnew;
+if W eq {} then return true; end if;
+#W;
+end while;
+return #W;
+end function;
