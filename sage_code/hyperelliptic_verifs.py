@@ -30,10 +30,12 @@ def try_najman_trbovic_filter(d, N):
 
 # The following does the verification
 
-vals = [26, 30, 35, 39, 40, 48, 50]
+# vals = [26, 30, 35, 39, 40, 48, 50]
 
-for N in vals:
-    if not try_najman_trbovic_filter(213, N):
-        print(f"{N} : najman_trbovic_filter")
-    else:
-        print(f"{N} is bad")
+# vals = [26, 28, 35, 39, 48, 50]
+
+# for N in vals:
+#     if not try_najman_trbovic_filter(213, N):
+#         print(f"{N} : najman_trbovic_filter")
+#     else:
+#         print(f"{N} is bad")
