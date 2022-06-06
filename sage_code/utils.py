@@ -7,8 +7,16 @@ GENUS_ZERO_LIST = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 16, 18, 25]
 GENUS_ONE_LIST = [11, 14, 15, 17, 19, 20, 21, 24, 27, 32, 36, 49]
 CLASS_NUMBER_ONE_DISCS = {-1, -2, -3, -7, -11, -19, -43, -67, -163}
 AMF2 = {26, 35, 37, 39, 43, 50, 65, 67, 91, 125, 163, 169}
+HYPERELLIPTIC_VALUES = {22,23,26,28,29,30,31,33,35,39, 40, 41,46,47,48,50,59,71}
 
-15, 20, 24, 27, 32, 36
+import json
+from hyperelliptic_verifs import try_najman_trbovic_filter
+from non_hyperelliptic_verifs import try_oezman_sieve, check_mwgp_same_minus
+
+QUADRATIC_POINTS_DATA_PATH = "quadratic_points_catalogue.json"
+
+with open(QUADRATIC_POINTS_DATA_PATH, "r") as qdpts_dat_file:
+    qdpts_dat = json.load(qdpts_dat_file)
 
 
 def split_cartan_genus(p):
@@ -323,3 +331,40 @@ def search_convenient_d_fast():
         if sorted(large_vals) == [125, 163, 169]:
             if check_mwgp_same(163, d):
                 print("d = {} is good".format(d))
+                K.<a> = QuadraticField(d)
+                hard_vals = [x for x in ans if not x in rank_zero_list]
+                if not K.is_norm(163):
+                    if not K.is_norm(-163):
+                        hard_vals.remove(163)
+                hard_vals.remove(125)
+                hard_vals.remove(169)
+                hard_vals.remove(91)
+
+                vals_to_remove = []
+
+                for z in hard_vals:
+                    if z in HYPERELLIPTIC_VALUES:
+                        if not try_najman_trbovic_filter(d, z):
+                            vals_to_remove.append(z)
+                        elif not try_oezman_sieve(d, z):
+                            vals_to_remove.append(z)
+                    else:
+                        if str(z) in qdpts_dat:
+                            data_this_z = qdpts_dat[str(z)]
+                            if data_this_z["is_complete"]:
+                                vals_to_remove.append(z)
+                            elif not try_oezman_sieve(d, z):
+                                vals_to_remove.append(z)
+                        else:
+                            if check_mwgp_same_minus(z, d):
+                                vals_to_remove.append(z)
+                            elif check_mwgp_same(z, d):
+                                if not K.is_norm(z):
+                                    if not K.is_norm(-z):
+                                        vals_to_remove.append(z)
+
+                hard_vals = [x for x in hard_vals if not x in vals_to_remove]
+                print(f"hard_vals={hard_vals}\n")
+
+
+

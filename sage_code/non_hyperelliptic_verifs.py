@@ -67,7 +67,7 @@ def is_rank_of_twist_zero(p, chi):
     return True
 
 
-def check_mwgp_same(p, d):
+def check_mwgp_same_minus(p, d):
     chi = kronecker_character(d)
     if is_rank_of_twist_zero(p, chi):
         if is_torsion_same(p, chi) == 1:
@@ -80,7 +80,7 @@ def check_mwgp_same(p, d):
 
 p = 43
 d = 213
-check_mwgp_same(p, d)
+check_mwgp_same_minus(p, d)
 
 # The following code shows that the only elliptic curve defined over K
 # with CM and admitting a 43-isogeny is the j-invariant written in Section
@@ -121,6 +121,9 @@ def oezman_sieve(p, N):
 # Here's a wrapper which gets the ps we are able to try
 
 def try_oezman_sieve(d, N):
+
+    if not N.is_squarefree():
+        return True
 
     disc_of_quad_field = d if d%4 == 1 else 4*d
     ram_primes = disc_of_quad_field.prime_divisors()
