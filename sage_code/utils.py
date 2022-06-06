@@ -178,7 +178,7 @@ def minimally_finite(d):
 
     output = output.union(S3)
     output = list(output)
-    sorted(output)
+    output = sorted(output)
 
     return output
 
@@ -210,7 +210,7 @@ def minimally_finite_fast(genus_one_zero_rank_list):
 
     output = output.union(S3)
     output = list(output)
-    sorted(output)
+    output = sorted(output)
 
     return output
 
@@ -240,7 +240,7 @@ def is_torsion_same(p, chi, B=100, uniform=False):
     for q, i in frob_poly_data:
         frob_pol_q = J0_min.frobenius_polynomial(q)
         frob_mat = companion_matrix(frob_pol_q)
-        point_counts.append((frob_mat ** i).charpoly()(1))
+        point_counts.append((frob_mat**i).charpoly()(1))
 
     # Recall that the rational torsion on J0(p) is entirely contained in
     # the minus part (theorem of Mazur), so checking no-growth of torsion
