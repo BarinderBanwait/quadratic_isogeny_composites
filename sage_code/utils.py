@@ -194,6 +194,7 @@ def minimally_finite_fast(genus_one_zero_rank_list):
     ]
 
     output = set(genus_one_zero_rank_list).union(AMF2)
+    output = {Integer(x) for x in output}
 
     S3_prime = set()
 
@@ -201,7 +202,7 @@ def minimally_finite_fast(genus_one_zero_rank_list):
 
     for b in genus_one_positive_rank_list:
         for p in small_prime_set:
-            candidate = b * p
+            candidate = Integer(b * p)
             if not is_multiple_of(candidate, output):
                 S3_prime.add(candidate)
 
@@ -308,7 +309,7 @@ def search_convenient_d_fast():
     uses the `minimally_finite_fast` method above.
     """
 
-    with open("magma_code/RankData.txt", "r") as the_file:
+    with open("../magma_code/RankData.txt", "r") as the_file:
         the_lines = the_file.read().splitlines()
 
     for a_line in the_lines:
