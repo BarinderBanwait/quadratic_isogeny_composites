@@ -7,7 +7,26 @@ GENUS_ZERO_LIST = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 16, 18, 25]
 GENUS_ONE_LIST = [11, 14, 15, 17, 19, 20, 21, 24, 27, 32, 36, 49]
 CLASS_NUMBER_ONE_DISCS = {-1, -2, -3, -7, -11, -19, -43, -67, -163}
 AMF2 = {26, 35, 37, 39, 43, 50, 65, 67, 91, 125, 163, 169}
-HYPERELLIPTIC_VALUES = {22,23,26,28,29,30,31,33,35,39, 40, 41,46,47,48,50,59,71}
+HYPERELLIPTIC_VALUES = {
+    22,
+    23,
+    26,
+    28,
+    29,
+    30,
+    31,
+    33,
+    35,
+    39,
+    40,
+    41,
+    46,
+    47,
+    48,
+    50,
+    59,
+    71,
+}
 
 import json
 from hyperelliptic_verifs import try_najman_trbovic_filter
@@ -331,7 +350,7 @@ def search_convenient_d_fast():
         if sorted(large_vals) == [125, 163, 169]:
             if check_mwgp_same(163, d):
                 print("d = {} is good".format(d))
-                K.<a> = QuadraticField(d)
+                K = QuadraticField(d)
                 hard_vals = [x for x in ans if not x in rank_zero_list]
                 if not K.is_norm(163):
                     if not K.is_norm(-163):
@@ -365,6 +384,3 @@ def search_convenient_d_fast():
 
                 hard_vals = [x for x in hard_vals if not x in vals_to_remove]
                 print(f"hard_vals={hard_vals}\n")
-
-
-
