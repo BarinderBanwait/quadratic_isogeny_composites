@@ -36,7 +36,7 @@ def is_torsion_same(p, chi, B=30, uniform=False):
     for q, i in frob_poly_data:
         frob_pol_q = J0_min.frobenius_polynomial(q)
         frob_mat = companion_matrix(frob_pol_q)
-        point_counts.append((frob_mat ** i).charpoly()(1))
+        point_counts.append((frob_mat**i).charpoly()(1))
 
     # Recall that the rational torsion on J0(p) is entirely contained in
     # the minus part (theorem of Mazur), so checking no-growth of torsion
@@ -78,30 +78,31 @@ def check_mwgp_same_minus(p, d):
 # The following then tests that for p = 43 and d = 213, the MW groups
 # are the same
 
-p = 43
-d = 213
-check_mwgp_same_minus(p, d)
+# p = 43
+# d = 213
+# check_mwgp_same_minus(p, d)
 
 # The following code shows that the only elliptic curve defined over K
 # with CM and admitting a 43-isogeny is the j-invariant written in Section
 # 7.1
 
-R.<x> = QQ[]
-f = x^2 - 213
-K.<a> = NumberField(f)
-cm_jinvs = cm_j_invariants(K)
-output = []
-for j in cm_jinvs:
-    Ej = EllipticCurve_from_j(j)
-    ipd = Ej.isogenies_prime_degree(minimal_models=False)
-    pdi = [phi.degree() for phi in ipd]
-    if 43 in pdi:
-        output.append(j)
-output
+# R.<x> = QQ[]
+# f = x^2 - 213
+# K.<a> = NumberField(f)
+# cm_jinvs = cm_j_invariants(K)
+# output = []
+# for j in cm_jinvs:
+#     Ej = EllipticCurve_from_j(j)
+#     ipd = Ej.isogenies_prime_degree(minimal_models=False)
+#     pdi = [phi.degree() for phi in ipd]
+#     if 43 in pdi:
+#         output.append(j)
+# output
 
 ### N = 65
 
 # Here is the implementation of the Özman sieve from `Isogeny Primes`
+
 
 def oezman_sieve(p, N):
     """If p is unramified in Q(sqrt(-N)) this always returns True.
@@ -118,21 +119,24 @@ def oezman_sieve(p, N):
 
     return False
 
+
 # Here's a wrapper which gets the ps we are able to try
+
 
 def try_oezman_sieve(d, N):
 
     if not N.is_squarefree():
         return True
 
-    disc_of_quad_field = d if d%4 == 1 else 4*d
+    disc_of_quad_field = d if d % 4 == 1 else 4 * d
     ram_primes = disc_of_quad_field.prime_divisors()
 
     for p in ram_primes:
-        if not oezman_sieve(p,N):
+        if not oezman_sieve(p, N):
             return False
     return True
 
+
 # Now we try it
 
-try_oezman_sieve(213, 65)  # False, which is what we wanted
+# try_oezman_sieve(213, 65)  # False, which is what we wanted
