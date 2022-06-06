@@ -352,8 +352,8 @@ def search_convenient_d_fast():
                 print("d = {} is good".format(d))
                 K = QuadraticField(d)
                 hard_vals = [x for x in ans if not x in rank_zero_list]
-                if not K.is_norm(163):
-                    if not K.is_norm(-163):
+                if not Integer(163).is_norm(K):
+                    if not Integer(-163).is_norm(K):
                         hard_vals.remove(163)
                 hard_vals.remove(125)
                 hard_vals.remove(169)
@@ -378,8 +378,8 @@ def search_convenient_d_fast():
                             if check_mwgp_same_minus(z, d):
                                 vals_to_remove.append(z)
                             elif check_mwgp_same(z, d):
-                                if not K.is_norm(z):
-                                    if not K.is_norm(-z):
+                                if not z.is_norm(K):
+                                    if not (-z).is_norm(K):
                                         vals_to_remove.append(z)
 
                 hard_vals = [x for x in hard_vals if not x in vals_to_remove]
