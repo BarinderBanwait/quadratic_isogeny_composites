@@ -12,6 +12,9 @@ from sage.all import (
     parent,
     companion_matrix,
     prime_range,
+    oo,
+    J0,
+    gcd,
 )
 
 ### N = 43
