@@ -374,13 +374,12 @@ def search_convenient_d_fast():
                                 vals_to_remove.append(z)
                             elif not try_oezman_sieve(d, z):
                                 vals_to_remove.append(z)
-                        else:
-                            if check_mwgp_same_minus(z, d):
-                                vals_to_remove.append(z)
-                            elif check_mwgp_same(z, d):
-                                if not z.is_norm(K):
-                                    if not (-z).is_norm(K):
-                                        vals_to_remove.append(z)
+                        if check_mwgp_same_minus(z, d):
+                            vals_to_remove.append(z)
+                        elif check_mwgp_same(z, d):
+                            if not z.is_norm(K):
+                                if not (-z).is_norm(K):
+                                    vals_to_remove.append(z)
 
                 hard_vals = [x for x in hard_vals if not x in vals_to_remove]
                 print(f"hard_vals={hard_vals}\n")
