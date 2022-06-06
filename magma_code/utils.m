@@ -53,7 +53,7 @@ end procedure;
 
 Genus1Values:=[11,14,15,17,19,20,21,24,27,32,36,49];
 R<x> := PolynomialRing(Rationals());
-procedure Ranks(d)
+function Ranks(d)
 	f := R![-d,0,1];
 	K<a> := NumberField(f);
 	MyVals := [];
@@ -64,8 +64,8 @@ procedure Ranks(d)
 			MyVals := Append(MyVals, N);
 		end if;
 	end for;
-	Write("RankData.txt", Sprintf("%o: %o", d, MyVals));
-end procedure;
+	return MyVals;
+end function;
 
 
 for d in [500..515] do
@@ -73,7 +73,8 @@ for d in [500..515] do
 		if d ne 0 then
 			if IsSquarefree(d) then
 				print "doing", d;
-				Ranks(d);
+				MyVals:= Ranks(d);
+				Write("RankData.txt", Sprintf("%o: %o", d, MyVals));
 			end if;
 		end if;
 	end if;
