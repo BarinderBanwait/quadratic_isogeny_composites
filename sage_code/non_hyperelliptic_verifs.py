@@ -5,6 +5,15 @@
 
 """
 
+from sage.all import (
+    QuadraticField,
+    kronecker_character,
+    ModularSymbols,
+    parent,
+    companion_matrix,
+    prime_range,
+)
+
 ### N = 43
 
 # We first show that J0(43)_(K) = J0(43)_(Q). This is achieved with the
