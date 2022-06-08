@@ -367,6 +367,10 @@ def search_convenient_d_fast():
                             vals_to_remove.append(z)
                         elif not try_oezman_sieve(d, z):
                             vals_to_remove.append(z)
+                        elif check_mwgp_same(z, d):
+                            if not z.is_norm(K):
+                                if not (-z).is_norm(K):
+                                    vals_to_remove.append(z)
                     else:
                         if str(z) in qdpts_dat:
                             data_this_z = qdpts_dat[str(z)]

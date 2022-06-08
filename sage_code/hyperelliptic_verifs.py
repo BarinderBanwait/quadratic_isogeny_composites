@@ -35,7 +35,7 @@ def try_najman_trbovic_filter(d, N):
 # vals = [26, 28, 35, 39, 48, 50]
 
 # for N in vals:
-#     if not try_najman_trbovic_filter(213, N):
+#     if not try_najman_trbovic_filter(467, N):
 #         print(f"{N} : najman_trbovic_filter")
 #     else:
 #         print(f"{N} is bad")
