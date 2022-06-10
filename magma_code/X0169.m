@@ -1,5 +1,19 @@
+//This file is part of the code for the paper B. S. Banwait, F. Najman, O. Padurariu: Cyclic isogenies of elliptic curves over a fixed quadratic field. It determines all the quadratic points on X0(169)
+
 load "X0p_NiceModel.m";
-load "Chabauty_MWSieve.m";
+load "Chabauty_MWSieve_131.m";
+
+Curve_and_Map := function(X,d);
+	R := AmbientSpace(X);
+	RR<[u]> := CoordinateRing(R);
+	n := Dimension(AmbientSpace(X));
+	P := ProjectiveSpace(Rationals(), d - 1);
+	proj := map<R -> P|[u[i] : i in [1..d]]>;
+	Xwd := proj(X);
+	mp := map<X -> Xwd|[u[i] : i in [1..d]]>;
+	return Xwd, mp;
+end function;
+
 
 //we find models for X and X/w169
 
@@ -54,6 +68,8 @@ end for;
 #deg2;
 Dtor:=Divisor(P1)-Divisor(P2);
 
+//We now show that the torsion is Z/7Z
+
 S:={};
 for i:=2 to 4 do
 d:=NthPrime(i);
@@ -76,3 +92,19 @@ assert Degree(ResidueClassField(Decomposition(bp)[1,1])) eq 1;
 B,iA,W:= MWSieve(X,wMatrix,genusC,primes, A, gens, bp, B0,iA0,W0,deg2);
 B;
 W;
+
+
+//It remains to determine all the quadratic points
+g:=Genus(X);
+for i in [1..#deg2pb] do
+	if Degree(ResidueClassField(Decomposition(deg2pb[i])[1,1])) gt 1 then
+		K1<z>:=ResidueClassField(Decomposition(deg2pb[i])[1,1]);
+		d:=SquarefreeFactorization(Discriminant(K1));
+		K<w>:=QuadraticField(d);
+		tr,f:=IsIsomorphic(K1,K);
+		assert tr;
+		P:=RepresentativePoint(Decomposition(deg2pb[i])[1,1]);
+		Pm:=ChangeRing(X,K)![f(P[i]): i in [1..g]];
+		w^2,Pm;
+	end if;
+end for;

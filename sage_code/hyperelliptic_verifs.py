@@ -8,6 +8,8 @@ This verifies the claims in Section 6 of the paper
 # apart from N = 37, the Najman-Trbovic filter method applies
 
 import json
+from sage.all import Integer
+
 
 QUADRATIC_POINTS_DATA_PATH = "quadratic_points_catalogue.json"
 
@@ -17,7 +19,7 @@ with open(QUADRATIC_POINTS_DATA_PATH, "r") as qdpts_dat_file:
 
 def try_najman_trbovic_filter(d, N):
 
-    disc_of_quad_field = d if d % 4 == 1 else 4 * d
+    disc_of_quad_field = Integer(d if d % 4 == 1 else 4 * d)
     ram_primes = disc_of_quad_field.prime_divisors()
 
     data_this_N = qdpts_dat[str(N)]
@@ -30,12 +32,27 @@ def try_najman_trbovic_filter(d, N):
 
 # The following does the verification
 
-# vals = [26, 30, 35, 39, 40, 48, 50]
 
-# vals = [26, 28, 35, 39, 48, 50]
+def verify_prop_6pt1():
 
-# for N in vals:
-#     if not try_najman_trbovic_filter(467, N):
-#         print(f"{N} : najman_trbovic_filter")
-#     else:
-#         print(f"{N} is bad")
+    vals213 = [26, 30, 35, 39, 40, 48, 50]
+
+    vals438 = [26, 28, 30, 35, 39, 48, 50]
+
+    print("Doing verification for Qsqrt213\n")
+
+    for N in vals213:
+        N = Integer(N)
+        if not try_najman_trbovic_filter(438, N):
+            print(f"{N} : najman_trbovic_filter")
+        else:
+            print(f"{N} is bad")
+
+    print("\nDoing verification for Qsqrt438\n")
+
+    for N in vals438:
+        N = Integer(N)
+        if not try_najman_trbovic_filter(438, N):
+            print(f"{N} : najman_trbovic_filter")
+        else:
+            print(f"{N} is bad")

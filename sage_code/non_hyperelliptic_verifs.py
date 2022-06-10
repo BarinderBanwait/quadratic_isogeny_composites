@@ -15,6 +15,7 @@ from sage.all import (
     oo,
     J0,
     gcd,
+    Integer,
 )
 
 ### N = 43
@@ -23,7 +24,7 @@ from sage.all import (
 # following functions from `Isogeny Primes`.
 
 
-def is_torsion_same(p, chi, B=30, uniform=False):
+def is_torsion_same_minus(p, chi, B=30, uniform=False):
     """Returns true if the minus part of J0(p) does not gain new torsion when
     base changing to K"""
     M = ModularSymbols(p)
@@ -48,7 +49,7 @@ def is_torsion_same(p, chi, B=30, uniform=False):
     for q, i in frob_poly_data:
         frob_pol_q = J0_min.frobenius_polynomial(q)
         frob_mat = companion_matrix(frob_pol_q)
-        point_counts.append((frob_mat**i).charpoly()(1))
+        point_counts.append((frob_mat ** i).charpoly()(1))
 
     # Recall that the rational torsion on J0(p) is entirely contained in
     # the minus part (theorem of Mazur), so checking no-growth of torsion
@@ -57,7 +58,7 @@ def is_torsion_same(p, chi, B=30, uniform=False):
     return J0(p).rational_torsion_order(proof=False) == gcd(point_counts)
 
 
-def is_rank_of_twist_zero(p, chi):
+def is_rank_of_twist_zero_minus(p, chi):
     """Returns true if the rank of the twist of the minus part of X_0(p)
     by the character chi is zero"""
     ML = ModularSymbols(p, base_ring=chi.base_ring())
@@ -81,8 +82,8 @@ def is_rank_of_twist_zero(p, chi):
 
 def check_mwgp_same_minus(p, d):
     chi = kronecker_character(d)
-    if is_rank_of_twist_zero(p, chi):
-        if is_torsion_same(p, chi) == 1:
+    if is_rank_of_twist_zero_minus(p, chi):
+        if is_torsion_same_minus(p, chi) == 1:
             return True
     return False
 
@@ -98,18 +99,26 @@ def check_mwgp_same_minus(p, d):
 # with CM and admitting a 43-isogeny is the j-invariant written in Section
 # 7.1
 
-# R.<x> = QQ[]
-# f = x^2 - 213
-# K.<a> = NumberField(f)
-# cm_jinvs = cm_j_invariants(K)
-# output = []
-# for j in cm_jinvs:
-#     Ej = EllipticCurve_from_j(j)
-#     ipd = Ej.isogenies_prime_degree(minimal_models=False)
-#     pdi = [phi.degree() for phi in ipd]
-#     if 43 in pdi:
-#         output.append(j)
-# output
+# get_cm_j_invs(p, d)
+
+
+def get_cm_j_invs(p, d):
+
+    R = PolynomialRing(RationalField(), "x")
+    x = R.gen()
+    f = x ^ 2 - d
+    K = NumberField(f, "a")
+    a = K.gen()
+    cm_jinvs = cm_j_invariants(K)
+    output = []
+    for j in cm_jinvs:
+        Ej = EllipticCurve_from_j(j)
+        ipd = Ej.isogenies_prime_degree()
+        pdi = [phi.degree() for phi in ipd]
+        if p in pdi:
+            output.append(j)
+    return output
+
 
 ### N = 65
 
@@ -137,7 +146,7 @@ def oezman_sieve(p, N):
 
 def try_oezman_sieve(d, N):
 
-    if not N.is_squarefree():
+    if not Integer(N).is_squarefree():
         return True
 
     disc_of_quad_field = d if d % 4 == 1 else 4 * d

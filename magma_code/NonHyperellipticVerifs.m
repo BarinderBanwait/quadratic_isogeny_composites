@@ -39,11 +39,3 @@ chi := BaseExtend(KroneckerCharacter(d),RationalField());
 tw := TwistedWindingElement(S_plus, 1, chi);
 twmap := RationalMapping(S_plus)(tw);
 twmap eq Parent(twmap)!0; // false, so rank of twist is zero
-
-// Checking norms - Condition (3) of Proposition 4.1 - is done as follows in
-// Magma
-
-K<a>:=QuadraticField(213);
-K:=AbelianExtension(K);
-IsNorm(K,BaseRing(K)!163);  // false
-IsNorm(K,BaseRing(K)!-163);  // false

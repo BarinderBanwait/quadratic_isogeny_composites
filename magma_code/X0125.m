@@ -1,7 +1,22 @@
-load "X0p_NiceModel.m";
-load "Chabauty_MWSieve.m";
+//This file is part of the code for the paper B. S. Banwait, F. Najman, O. Padurariu: Cyclic isogenies of elliptic curves over a fixed quadratic field. It determines all the quadratic points on X0(125)
 
-//we find models for X and X/w101
+
+Curve_and_Map := function(X,d);
+	R := AmbientSpace(X);
+	RR<[u]> := CoordinateRing(R);
+	n := Dimension(AmbientSpace(X));
+	P := ProjectiveSpace(Rationals(), d - 1);
+	proj := map<R -> P|[u[i] : i in [1..d]]>;
+	Xwd := proj(X);
+	mp := map<X -> Xwd|[u[i] : i in [1..d]]>;
+	return Xwd, mp;
+end function;
+
+
+load "X0p_NiceModel.m";
+load "Chabauty_MWSieve_131.m";
+
+//we find models for X and X/w125
 d:=125;
 C := CuspForms(d);
 "Dimension of CuspForms(", d, ") is: ", Dimension(C);
@@ -43,12 +58,16 @@ deg2pb:=[Pullback(quotMap,Place(p)):p in ptsXw];
 for i:=1 to #deg2pb do
 SquarefreeFactorization(Discriminant(ResidueClassField(Decomposition(deg2pb[i])[1,1])));
 end for;
+
+//We now show that the torsion is Z/25Z
 P1:=X![1,0,0,0,0,0,1,0];
 P2:=X![-1,0,0,0,0,0,1,0];
 Dtor:=Divisor(P1)-Divisor(P2);
 S:={};
 IsPrincipal(5*Dtor);
 IsPrincipal(25*Dtor);
+
+
 for i:=4 to 8 do
 d:=NthPrime(i);
 S:=S join {#TorsionSubgroup(ClassGroup(ChangeRing(X,GF(d))))};
@@ -76,3 +95,19 @@ end for;
 B,iA,W:= MWSieve(X,wMatrix,genusC,primes, A, gens, bp, B0,iA0,W0,deg2);
 B;
 W;
+
+
+//It remains to determine all the quadratic points
+g:=Genus(X);
+for i in [1..#deg2pb] do
+	if Degree(ResidueClassField(Decomposition(deg2pb[i])[1,1])) gt 1 then
+		K1<z>:=ResidueClassField(Decomposition(deg2pb[i])[1,1]);
+		d:=SquarefreeFactorization(Discriminant(K1));
+		K<w>:=QuadraticField(d);
+		tr,f:=IsIsomorphic(K1,K);
+		assert tr;
+		P:=RepresentativePoint(Decomposition(deg2pb[i])[1,1]);
+		Pm:=ChangeRing(X,K)![f(P[i]): i in [1..g]];
+		w^2,Pm;
+	end if;
+end for;

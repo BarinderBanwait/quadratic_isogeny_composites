@@ -31,6 +31,7 @@ HYPERELLIPTIC_VALUES = {
 import json
 from hyperelliptic_verifs import try_najman_trbovic_filter
 from non_hyperelliptic_verifs import try_oezman_sieve, check_mwgp_same_minus
+from large_possible_isogeny_primes import LPIP
 
 QUADRATIC_POINTS_DATA_PATH = "quadratic_points_catalogue.json"
 
@@ -190,6 +191,7 @@ def minimally_finite(d):
             genus_one_zero_rank_list.append(N)
 
     output = set(genus_one_zero_rank_list).union(AMF2)
+    output = {Integer(x) for x in output}
 
     S3_prime = set()
 
@@ -212,7 +214,7 @@ def minimally_finite(d):
 
 def minimally_finite_fast(genus_one_zero_rank_list):
     """Sage is much slower than Magma with computing ranks of ECs over NFs,
-    making `minimally_finite` slow. This function gets the data for which of
+    making `minimally_finite` slow. This function takes as input the data for which of
     the genus 1 modular curves have positive rank over a given quadratic field.
     This is then much faster.
     """
@@ -242,7 +244,7 @@ def minimally_finite_fast(genus_one_zero_rank_list):
     return output
 
 
-def is_torsion_same(p, chi, B=100, uniform=False):
+def is_torsion_same_plus(p, chi, B=100, uniform=False):
     """Returns true if the plus part of J0(p) does not gain new torsion when
     base changing to K"""
     M = ModularSymbols(p)
@@ -267,7 +269,7 @@ def is_torsion_same(p, chi, B=100, uniform=False):
     for q, i in frob_poly_data:
         frob_pol_q = J0_min.frobenius_polynomial(q)
         frob_mat = companion_matrix(frob_pol_q)
-        point_counts.append((frob_mat**i).charpoly()(1))
+        point_counts.append((frob_mat ** i).charpoly()(1))
 
     # Recall that the rational torsion on J0(p) is entirely contained in
     # the minus part (theorem of Mazur), so checking no-growth of torsion
@@ -276,7 +278,7 @@ def is_torsion_same(p, chi, B=100, uniform=False):
     return 1 == gcd(point_counts)
 
 
-def is_rank_of_twist_zero(p, chi):
+def is_rank_of_twist_zero_plus(p, chi):
     """Returns true if the rank of the twist of the plus part of J_0(p)
     by the character chi is zero"""
     ML = ModularSymbols(p, base_ring=chi.base_ring())
@@ -298,11 +300,11 @@ def is_rank_of_twist_zero(p, chi):
     return True
 
 
-def check_mwgp_same(p, d):
+def check_mwgp_same_plus(p, d):
     """Checks conditions (1) and (2) of Proposition 4.1"""
     chi = kronecker_character(d)
-    if is_rank_of_twist_zero(p, chi):
-        if is_torsion_same(p, chi):
+    if is_rank_of_twist_zero_plus(p, chi):
+        if is_torsion_same_plus(p, chi):
             return True
     return False
 
@@ -323,7 +325,7 @@ def search_convenient_d(d_start, d_end):
                         continue
                     large_vals = [d for d in ans if d > 100]
                     if sorted(large_vals) == [125, 163, 169]:
-                        if check_mwgp_same(163, d):
+                        if check_mwgp_same_plus(163, d):
                             print("d = {} is good".format(d))
 
 
@@ -346,10 +348,20 @@ def search_convenient_d_fast():
         rank_zero_list = eval(pre_rank_zero_list)
         rank_zero_list = [Integer(x) for x in rank_zero_list]
         ans = minimally_finite_fast(rank_zero_list)
+        if d in LPIP:
+            # if we have info on large possible isogeny primes, add that in
+            # users wanting to run this for other ranges should populate
+            # that list, or directly plumb in isogeny_primes here
+            ans += LPIP[d]
         large_vals = [d for d in ans if d > 100]
         if sorted(large_vals) == [125, 163, 169]:
-            if check_mwgp_same(163, d):
+            if check_mwgp_same_plus(163, d):
                 print("d = {} is good".format(d))
+                # The following runs some automated checks to identify
+                # the hard values one will need to consider
+                # Values not declared hard does not imply that
+                # those are easy to deal with (only maybe more doable)
+
                 K = QuadraticField(d)
                 hard_vals = [x for x in ans if not x in rank_zero_list]
                 if not Integer(163).is_norm(K):
@@ -367,10 +379,6 @@ def search_convenient_d_fast():
                             vals_to_remove.append(z)
                         elif not try_oezman_sieve(d, z):
                             vals_to_remove.append(z)
-                        elif check_mwgp_same(z, d):
-                            if not z.is_norm(K):
-                                if not (-z).is_norm(K):
-                                    vals_to_remove.append(z)
                     else:
                         if str(z) in qdpts_dat:
                             data_this_z = qdpts_dat[str(z)]
@@ -380,17 +388,13 @@ def search_convenient_d_fast():
                                 vals_to_remove.append(z)
                             elif check_mwgp_same_minus(z, d):
                                 vals_to_remove.append(z)
-                            elif check_mwgp_same(z, d):
-                                if not z.is_norm(K):
-                                    if not (-z).is_norm(K):
-                                        vals_to_remove.append(z)
+                            elif check_mwgp_same_plus(z, d):
+                                vals_to_remove.append(z)
                         else:
                             if check_mwgp_same_minus(z, d):
                                 vals_to_remove.append(z)
-                            elif check_mwgp_same(z, d):
-                                if not z.is_norm(K):
-                                    if not (-z).is_norm(K):
-                                        vals_to_remove.append(z)
+                            elif check_mwgp_same_plus(z, d):
+                                vals_to_remove.append(z)
 
                 hard_vals = [x for x in hard_vals if not x in vals_to_remove]
                 print(f"hard_vals={hard_vals}\n")
