@@ -2,8 +2,8 @@
     X037.m
 
     The function `ComputePreimages` below carries out the computation of pulling back
-    the rational points on E(Q) to determine that X0(37)(K) = X0(37)(Q), and hence
-    dealing with the N=37 case of Proposition 6.1.
+    the rational points on E(K) = E(Q) to determine that X0(37)(K) = X0(37)(Q),
+    and hence dealing with the (N=37, K=Qsqrt213) case of Proposition 6.1.
 
 */
 
