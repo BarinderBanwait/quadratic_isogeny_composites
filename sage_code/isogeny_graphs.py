@@ -11,17 +11,26 @@ my_js_438 = [-884736, -882216989/131072, -297756989/2, -32768, -24729001, -121, 
 
 # Obtainining the unrecorded isogeny degrees is then done as follows
 
-def get_unrecorded_isogenies(d, my_js):
+def isogeny_degrees(j, K=None):
+    """This function was suggested to us by John Cremona - thanks John!"""
+    if K is None:
+        K = j.parent()
+    E = EllipticCurve(j=K(j))
+    C = E.isogeny_class()
+    return set(C.matrix()[C.index(E)])
 
+
+def get_unrecorded_isogenies(d, my_js):
+    """This is a wrapper for the above function, to obtain the "unrecorded isogenies"
+    (in the sense of Mazur) from the j-invariants identified above"""
     K.<a> = QuadraticField(d)
     unrecorded_isogeny_degrees = set()
     for j in my_js:
-        E = EllipticCurve_from_j(j).base_extend(K)
-        unrecorded_isogeny_degrees = unrecorded_isogeny_degrees.union(set(E.isogeny_class().matrix().list()))
+        unrecorded_isogeny_degrees = unrecorded_isogeny_degrees.union(isogeny_degrees(K(j)))
 
     return unrecorded_isogeny_degrees
 
-# Then run the following
+# Then run the following to verify the main claim of Section 9 of the paper
 
 # get_unrecorded_isogenies(213, my_js_213)
 # get_unrecorded_isogenies(438, my_js_438)
