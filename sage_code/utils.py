@@ -17,6 +17,7 @@ HYPERELLIPTIC_VALUES = {
     31,
     33,
     35,
+    37,
     39,
     40,
     41,
@@ -269,7 +270,7 @@ def is_torsion_same_plus(p, chi, B=100, uniform=False):
     for q, i in frob_poly_data:
         frob_pol_q = J0_min.frobenius_polynomial(q)
         frob_mat = companion_matrix(frob_pol_q)
-        point_counts.append((frob_mat ** i).charpoly()(1))
+        point_counts.append((frob_mat**i).charpoly()(1))
 
     # Recall that the rational torsion on J0(p) is entirely contained in
     # the minus part (theorem of Mazur), so checking no-growth of torsion
@@ -356,7 +357,7 @@ def search_convenient_d_fast():
         large_vals = [d for d in ans if d > 100]
         if sorted(large_vals) == [125, 163, 169]:
             if check_mwgp_same_plus(163, d):
-                print("d = {} is good".format(d))
+                print("d = {} is convenient".format(d))
                 # The following runs some automated checks to identify
                 # the hard values one will need to consider
                 # Values not declared hard does not imply that
@@ -364,21 +365,20 @@ def search_convenient_d_fast():
 
                 K = QuadraticField(d)
                 hard_vals = [x for x in ans if not x in rank_zero_list]
-                if not Integer(163).is_norm(K):
-                    if not Integer(-163).is_norm(K):
-                        hard_vals.remove(163)
-                hard_vals.remove(125)
-                hard_vals.remove(169)
-                hard_vals.remove(91)
+                hard_vals.remove(125)  # all quad pts determined
+                hard_vals.remove(169)  # all quad pts determined
+                hard_vals.remove(91)  # all quad pts determined
+                hard_vals.remove(163)  # by definition of convenient
 
                 vals_to_remove = []
 
                 for z in hard_vals:
                     if z in HYPERELLIPTIC_VALUES:
-                        if not try_najman_trbovic_filter(d, z):
-                            vals_to_remove.append(z)
-                        elif not try_oezman_sieve(d, z):
-                            vals_to_remove.append(z)
+                        if z != 37:
+                            if not try_najman_trbovic_filter(d, z):
+                                vals_to_remove.append(z)
+                            elif not try_oezman_sieve(d, z):
+                                vals_to_remove.append(z)
                     else:
                         if str(z) in qdpts_dat:
                             data_this_z = qdpts_dat[str(z)]
