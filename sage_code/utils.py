@@ -251,12 +251,29 @@ def _minimally_finite_fast(genus_one_zero_rank_list):
     return output
 
 
-def minimally_finite_fast(d):
+def minimally_finite_fast(d, process=False):
 
     genus_one_zero_rank_list = rank_data_dict[d]
     genus_one_zero_rank_list = [Integer(x) for x in genus_one_zero_rank_list]
+    mf_list = _minimally_finite_fast(genus_one_zero_rank_list)
+    if not process:
+        return mf_list
 
-    return _minimally_finite_fast(genus_one_zero_rank_list)
+    my_elliptic_vals = []
+    my_hyperelliptic_vals = []
+    my_non_hyperelliptic_vals = []
+
+    for d in mf_list:
+        if d in GENUS_ONE_LIST:
+            my_elliptic_vals.append(d)
+        elif d in HYPERELLIPTIC_VALUES:
+            my_hyperelliptic_vals.append(d)
+        else:
+            my_non_hyperelliptic_vals.append(d)
+
+    print(f"elliptic vals = {my_elliptic_vals}")
+    print(f"hyperelliptic vals = {my_hyperelliptic_vals}")
+    print(f"non hyperelliptic vals = {my_non_hyperelliptic_vals}")
 
 
 def is_torsion_same_plus(p, chi, B=100, uniform=False):
