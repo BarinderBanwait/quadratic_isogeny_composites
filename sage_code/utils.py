@@ -388,8 +388,8 @@ def search_convenient_d_fast():
                                 vals_to_remove.append(z)
                             elif check_mwgp_same_minus(z, d):
                                 vals_to_remove.append(z)
-                            elif check_mwgp_same_plus(z, d):
-                                vals_to_remove.append(z)
+                            # elif check_mwgp_same_plus(z, d):
+                            #     vals_to_remove.append(z)
                         else:
                             if check_mwgp_same_minus(z, d):
                                 vals_to_remove.append(z)
