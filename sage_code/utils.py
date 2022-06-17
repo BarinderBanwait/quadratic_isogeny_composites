@@ -39,6 +39,12 @@ QUADRATIC_POINTS_DATA_PATH = "quadratic_points_catalogue.json"
 with open(QUADRATIC_POINTS_DATA_PATH, "r") as qdpts_dat_file:
     qdpts_dat = json.load(qdpts_dat_file)
 
+with open("../magma_code/RankData.txt", "r") as the_file:
+    rank_data = the_file.read().splitlines()
+
+A = [a_line.split(":") for a_line in rank_data]
+rank_data_dict = {Integer(d): eval(my_list) for d, my_list in A}
+
 
 def split_cartan_genus(p):
     """Computes the genus of X_s(p) from Imin Chen's "The Jacobians of
@@ -213,7 +219,7 @@ def minimally_finite(d):
     return output
 
 
-def minimally_finite_fast(genus_one_zero_rank_list):
+def _minimally_finite_fast(genus_one_zero_rank_list):
     """Sage is much slower than Magma with computing ranks of ECs over NFs,
     making `minimally_finite` slow. This function takes as input the data for which of
     the genus 1 modular curves have positive rank over a given quadratic field.
@@ -243,6 +249,14 @@ def minimally_finite_fast(genus_one_zero_rank_list):
     output = sorted(output)
 
     return output
+
+
+def minimally_finite_fast(d):
+
+    genus_one_zero_rank_list = rank_data_dict[d]
+    genus_one_zero_rank_list = [Integer(x) for x in genus_one_zero_rank_list]
+
+    return _minimally_finite_fast(genus_one_zero_rank_list)
 
 
 def is_torsion_same_plus(p, chi, B=100, uniform=False):
@@ -336,19 +350,13 @@ def search_convenient_d_fast():
     was run to determine, for -500 < d < 500, which of the genus 1 modular curves
     have positive rank over Qsqrtd. The results of this computation may be found
     in `magma_code/RankData.txt`. This function then reads this data in and
-    uses the `minimally_finite_fast` method above.
+    uses the private `_minimally_finite_fast` method above.
     """
 
-    with open("../magma_code/RankData.txt", "r") as the_file:
-        the_lines = the_file.read().splitlines()
+    for d, pre_rank_zero_list in rank_data_dict.items():
 
-    for a_line in the_lines:
-
-        d, pre_rank_zero_list = a_line.split(":")
-        d = Integer(d)
-        rank_zero_list = eval(pre_rank_zero_list)
-        rank_zero_list = [Integer(x) for x in rank_zero_list]
-        ans = minimally_finite_fast(rank_zero_list)
+        rank_zero_list = [Integer(x) for x in pre_rank_zero_list]
+        ans = _minimally_finite_fast(rank_zero_list)
         if d in LPIP:
             # if we have info on large possible isogeny primes, add that in
             # users wanting to run this for other ranges should populate
@@ -388,8 +396,6 @@ def search_convenient_d_fast():
                                 vals_to_remove.append(z)
                             elif check_mwgp_same_minus(z, d):
                                 vals_to_remove.append(z)
-                            # elif check_mwgp_same_plus(z, d):
-                            #     vals_to_remove.append(z)
                         else:
                             if check_mwgp_same_minus(z, d):
                                 vals_to_remove.append(z)
