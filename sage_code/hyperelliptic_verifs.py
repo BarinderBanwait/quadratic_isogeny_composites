@@ -5,7 +5,7 @@ This verifies the claims in Section 6 of the paper
 """
 
 # We first show that, for all N as in the statement of Proposition 6.1,
-# apart from N = 37, the Najman-Trbovic filter method applies
+# apart from N = 37, the Trbovic filter method applies
 
 import json
 from sage.all import Integer
@@ -17,7 +17,7 @@ with open(QUADRATIC_POINTS_DATA_PATH, "r") as qdpts_dat_file:
     qdpts_dat = json.load(qdpts_dat_file)
 
 
-def try_najman_trbovic_filter(d, N):
+def try_trbovic_filter(d, N):
 
     disc_of_quad_field = Integer(d if d % 4 == 1 else 4 * d)
     ram_primes = disc_of_quad_field.prime_divisors()
@@ -43,8 +43,8 @@ def verify_prop_6pt1():
 
     for N in vals213:
         N = Integer(N)
-        if not try_najman_trbovic_filter(438, N):
-            print(f"{N} : najman_trbovic_filter")
+        if not try_trbovic_filter(438, N):
+            print(f"{N} : trbovic_filter")
         else:
             print(f"{N} is bad")
 
@@ -52,7 +52,7 @@ def verify_prop_6pt1():
 
     for N in vals438:
         N = Integer(N)
-        if not try_najman_trbovic_filter(438, N):
-            print(f"{N} : najman_trbovic_filter")
+        if not try_trbovic_filter(438, N):
+            print(f"{N} : trbovic_filter")
         else:
             print(f"{N} is bad")

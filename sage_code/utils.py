@@ -30,7 +30,7 @@ HYPERELLIPTIC_VALUES = {
 }
 
 import json
-from hyperelliptic_verifs import try_najman_trbovic_filter
+from hyperelliptic_verifs import try_trbovic_filter
 from non_hyperelliptic_verifs import try_oezman_sieve, check_mwgp_same_minus
 from large_possible_isogeny_primes import LPIP
 
@@ -400,7 +400,7 @@ def search_convenient_d_fast():
                 for z in hard_vals:
                     if z in HYPERELLIPTIC_VALUES:
                         if z != 37:
-                            if not try_najman_trbovic_filter(d, z):
+                            if not try_trbovic_filter(d, z):
                                 vals_to_remove.append(z)
                             elif not try_oezman_sieve(d, z):
                                 vals_to_remove.append(z)
