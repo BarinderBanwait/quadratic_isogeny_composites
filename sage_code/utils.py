@@ -31,7 +31,11 @@ HYPERELLIPTIC_VALUES = {
 
 import json
 from hyperelliptic_verifs import try_trbovic_filter
-from non_hyperelliptic_verifs import try_oezman_sieve, check_mwgp_same_minus
+from non_hyperelliptic_verifs import (
+    is_rank_of_twist_zero_minus,
+    try_oezman_sieve,
+    check_mwgp_same_minus,
+)
 from large_possible_isogeny_primes import LPIP
 
 QUADRATIC_POINTS_DATA_PATH = "quadratic_points_catalogue.json"
@@ -44,6 +48,23 @@ with open("../magma_code/RankData.txt", "r") as the_file:
 
 A = [a_line.split(":") for a_line in rank_data]
 rank_data_dict = {Integer(d): eval(my_list) for d, my_list in A}
+
+
+def get_easy_large_vals():
+
+    output = {163}
+
+    for strN in qdpts_dat:
+        N = Integer(strN)
+        if N > 100:
+            data_here = qdpts_dat[strN]
+            if data_here["is_complete"]:
+                output.add(N)
+
+    return list(output)
+
+
+EASY_LARGE_VALS = get_easy_large_vals()
 
 
 def split_cartan_genus(p):
@@ -369,7 +390,7 @@ def search_convenient_d_fast():
     in `magma_code/RankData.txt`. This function then reads this data in and
     uses the private `_minimally_finite_fast` method above.
     """
-
+    really_convenient = []
     for d, pre_rank_zero_list in rank_data_dict.items():
 
         rank_zero_list = [Integer(x) for x in pre_rank_zero_list]
@@ -380,9 +401,9 @@ def search_convenient_d_fast():
             # that list, or directly plumb in isogeny_primes here
             ans += LPIP[d]
         large_vals = [d for d in ans if d > 100]
-        if sorted(large_vals) == [125, 163, 169]:
+        if set(large_vals).issubset(EASY_LARGE_VALS):
             if check_mwgp_same_plus(163, d):
-                print("d = {} is convenient".format(d))
+                # print("d = {} is convenient".format(d))
                 # The following runs some automated checks to identify
                 # the hard values one will need to consider
                 # Values not declared hard does not imply that
@@ -390,10 +411,9 @@ def search_convenient_d_fast():
 
                 K = QuadraticField(d)
                 hard_vals = [x for x in ans if not x in rank_zero_list]
-                hard_vals.remove(125)  # all quad pts determined
-                hard_vals.remove(169)  # all quad pts determined
+                hard_vals = [x for x in hard_vals if not x in EASY_LARGE_VALS]
+
                 hard_vals.remove(91)  # all quad pts determined
-                hard_vals.remove(163)  # by definition of convenient
 
                 vals_to_remove = []
 
@@ -404,6 +424,13 @@ def search_convenient_d_fast():
                                 vals_to_remove.append(z)
                             elif not try_oezman_sieve(d, z):
                                 vals_to_remove.append(z)
+                        else:
+                            # 37 requires special handling
+                            if is_rank_of_twist_zero_minus(37, kronecker_character(d)):
+                                vals_to_remove.append(z)
+                            elif check_mwgp_same_plus(37, d):
+                                if not try_oezman_sieve(d, 37):
+                                    vals_to_remove.append(z)
                     else:
                         if str(z) in qdpts_dat:
                             data_this_z = qdpts_dat[str(z)]
@@ -420,4 +447,15 @@ def search_convenient_d_fast():
                                 vals_to_remove.append(z)
 
                 hard_vals = [x for x in hard_vals if not x in vals_to_remove]
-                print(f"hard_vals={hard_vals}\n")
+                if not hard_vals:
+                    really_convenient.append(d)
+
+                # if hard_vals == [37]:
+                #     if is_rank_of_twist_zero_minus(37, kronecker_character(d)):
+                #         print("d = {} is really convenient".format(d))
+                #     elif check_mwgp_same_plus(37, d):
+                #         if not try_oezman_sieve(d, 37):
+                #             print("d = {} is really convenient".format(d))
+
+                # print(f"hard_vals={hard_vals}\n")
+    return really_convenient

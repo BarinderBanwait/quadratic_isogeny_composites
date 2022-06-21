@@ -15,6 +15,7 @@ from sage.all import (
     oo,
     J0,
     gcd,
+    legendre_symbol,
     Integer,
 )
 
@@ -49,7 +50,7 @@ def is_torsion_same_minus(p, chi, B=30, uniform=False):
     for q, i in frob_poly_data:
         frob_pol_q = J0_min.frobenius_polynomial(q)
         frob_mat = companion_matrix(frob_pol_q)
-        point_counts.append((frob_mat ** i).charpoly()(1))
+        point_counts.append((frob_mat**i).charpoly()(1))
 
     # Recall that the rational torsion on J0(p) is entirely contained in
     # the minus part (theorem of Mazur), so checking no-growth of torsion
@@ -141,6 +142,22 @@ def oezman_sieve(p, N):
     return False
 
 
+def satisfies_cond_3(x, p):
+
+    if p % 4 != 3:
+        return False
+
+    if legendre_symbol(-x, p) != -1:
+        return False
+
+    my_prime_divs = Integer(x).prime_divisors()
+
+    if not all([q % 4 == 1 for q in my_prime_divs]):
+        return False
+
+    return True
+
+
 # Here's a wrapper which gets the ps we are able to try
 
 
@@ -155,6 +172,18 @@ def try_oezman_sieve(d, N):
     for p in ram_primes:
         if not oezman_sieve(p, N):
             return False
+
+    # Try part 3 of Ozman's result
+    odd_prime_divs = [p for p in Integer(N).prime_divisors() if p % 2 == 1]
+    odd_prime_divs_inert_in_K = [
+        p for p in odd_prime_divs if legendre_symbol(d, p) == -1
+    ]
+
+    for p in odd_prime_divs_inert_in_K:
+        quo = N / (2 * p) if N % 2 == 0 else N / p
+        if not satisfies_cond_3(quo, p):
+            return False
+
     return True
 
 
