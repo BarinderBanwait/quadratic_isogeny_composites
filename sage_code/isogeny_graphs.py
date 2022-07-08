@@ -81,8 +81,6 @@ def unrecorded_isogenies(K, my_js, d, z=None, cm=False):
         isog_classes_j_invs.append(jInvs)
         isog_mats.append(M)
 
-    logger.debug("Computed CM isogeny classes!")
-
     if cm:
         desired_degrees = {
             a

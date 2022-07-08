@@ -125,7 +125,9 @@ def process_non_hyperelliptic(d, K_gen, non_hyperelliptic_vals):
             # unrecorded isogenies
             j_invs_str = data_this_z["non_cm_points"].get(str(d), [])
             isog_count, j_inv_list = unique_j_inv_count(j_invs_str, K_gen)
+            logging.debug("Starting isogeny class computation for non-hyperelliptic j-invariants...")
             unrecorded_isogenies_dict = unrecorded_isogenies(K, j_inv_list, d, z=z)
+            logging.debug("DONE isogeny class computation for non-hyperelliptic j-invariants!")
             # The following will only update the dictionary with unrecorded isogenies,
             # that is, with degrees which are multiples of z. Updating z itself
             # is done right at the end of the for loop
