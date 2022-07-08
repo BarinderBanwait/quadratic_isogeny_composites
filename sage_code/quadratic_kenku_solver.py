@@ -64,7 +64,9 @@ def process_hyperelliptic(d, K_gen, hyperelliptic_vals):
                     raise NotImplementedError(f"d = {d}, z={z}")
             j_invs_str = data_this_z["non_cm_points"].get(str(d), [])
             isog_count, j_inv_list = unique_j_inv_count(j_invs_str, K_gen)
+            logging.debug("Starting isogeny class computation for hyperelliptic j-invariants...")
             unrecorded_isogenies_dict = unrecorded_isogenies(K, j_inv_list, d, z=z)
+            logging.debug("DONE isogeny class computation for hyperelliptic j-invariants!")
             # The following will only update the dictionary with unrecorded isogenies,
             # that is, with degrees which are multiples of z. Updating z itself
             # is done right at the end of the for loop
@@ -228,7 +230,7 @@ def quadratic_kenku_solver(d):
 
     logging.debug("Starting CM computation ...")
     cm_isogenies_dict = unrecorded_isogenies(K, cm_jinvs, d, cm=True)
-
+    logging.debug("Computed CM isogeny classes!")
     all_dicts = [
         elliptic_count_dict,
         hyperelliptic_count_dict,
