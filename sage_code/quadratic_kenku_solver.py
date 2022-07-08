@@ -64,9 +64,9 @@ def process_hyperelliptic(d, K_gen, hyperelliptic_vals):
                     raise NotImplementedError(f"d = {d}, z={z}")
             j_invs_str = data_this_z["non_cm_points"].get(str(d), [])
             isog_count, j_inv_list = unique_j_inv_count(j_invs_str, K_gen)
-            logging.debug("Starting isogeny class computation for hyperelliptic j-invariants...")
+            logging.debug(f"Starting isogeny class computation for j-invariants on X0({z})")
             unrecorded_isogenies_dict = unrecorded_isogenies(K, j_inv_list, d, z=z)
-            logging.debug("DONE isogeny class computation for hyperelliptic j-invariants!")
+            logging.debug(f"DONE isogeny class computation for j-invariants on X0({z})!")
             # The following will only update the dictionary with unrecorded isogenies,
             # that is, with degrees which are multiples of z. Updating z itself
             # is done right at the end of the for loop
@@ -125,9 +125,9 @@ def process_non_hyperelliptic(d, K_gen, non_hyperelliptic_vals):
             # unrecorded isogenies
             j_invs_str = data_this_z["non_cm_points"].get(str(d), [])
             isog_count, j_inv_list = unique_j_inv_count(j_invs_str, K_gen)
-            logging.debug("Starting isogeny class computation for non-hyperelliptic j-invariants...")
+            logging.debug(f"Starting isogeny class computation for j-invariants on X0({z})")
             unrecorded_isogenies_dict = unrecorded_isogenies(K, j_inv_list, d, z=z)
-            logging.debug("DONE isogeny class computation for non-hyperelliptic j-invariants!")
+            logging.debug(f"DONE isogeny class computation for j-invariants on X0({z})!")
             # The following will only update the dictionary with unrecorded isogenies,
             # that is, with degrees which are multiples of z. Updating z itself
             # is done right at the end of the for loop
@@ -159,11 +159,6 @@ def process_non_hyperelliptic(d, K_gen, non_hyperelliptic_vals):
         output_dict[z] = isog_count
 
     return output_dict
-
-
-def process_cm_j_invariants(K):
-
-    return None
 
 
 def format_magma_function(d):
@@ -219,11 +214,15 @@ def quadratic_kenku_solver(d):
     elliptic_count_magma_str = elliptic_count_magma_str.replace(">", ")")
     elliptic_count_dict = dict(eval(elliptic_count_magma_str))
 
+    logging.info("Starting hyperelliptic values ...")
     hyperelliptic_count_dict = process_hyperelliptic(d, K_gen, my_hyperelliptic_vals)
+    logging.info("Done hyperelliptic values!")
 
+    logging.info("Starting non-hyperelliptic values ...")
     non_hyperelliptic_count_dict = process_non_hyperelliptic(
         d, K_gen, my_non_hyperelliptic_vals
     )
+    logging.info("Done non-hyperelliptic values!")
 
     print(f"hyperelliptic_count = {hyperelliptic_count_dict}")
     print(f"non_hyperelliptic_count = {non_hyperelliptic_count_dict}")
