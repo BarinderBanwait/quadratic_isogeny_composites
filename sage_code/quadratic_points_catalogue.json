@@ -18,7 +18,18 @@
             89,
             97
         ],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {
+            "-7": [
+                "(-15856001239/8388608, 3965857499/8388608)",
+                "(4421/8, 89/8)",
+                "(18269/4, 267/4)",
+                "(20446557107/4096, 10197162951/4096)"
+            ],
+            "33": [],
+            "-47": [],
+            "-2": []
+        }
     },
     "23": {
         "known_D": [
@@ -38,7 +49,8 @@
             71,
             73
         ],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "26": {
         "known_D": [
@@ -67,7 +79,8 @@
             89,
             97
         ],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "28": {
         "known_D": [
@@ -91,7 +104,8 @@
             89,
             97
         ],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "29": {
         "known_D": [
@@ -117,7 +131,8 @@
             89,
             97
         ],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "30": {
         "known_D": [
@@ -140,7 +155,8 @@
             83,
             97
         ],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "31": {
         "known_D": [
@@ -178,7 +194,8 @@
             79,
             83
         ],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "34": {
         "known_D": [
@@ -209,7 +226,16 @@
             83,
             97
         ],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
+    },
+    "37": {
+        "known_D": [
+            5
+        ],
+        "unramified_primes": [],
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "38": {
         "known_D": [
@@ -217,7 +243,8 @@
             -3
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "39": {
         "known_D": [
@@ -245,7 +272,8 @@
             89,
             97
         ],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "40": {
         "known_D": [
@@ -276,7 +304,8 @@
             83,
             97
         ],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "41": {
         "known_D": [
@@ -302,14 +331,16 @@
             89,
             97
         ],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "42": {
         "known_D": [
             -3
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "43": {
         "known_D": [
@@ -317,14 +348,16 @@
             -71
         ],
         "unramified_primes": [],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "44": {
         "known_D": [
             -7
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "45": {
         "known_D": [
@@ -333,7 +366,8 @@
             -39
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "46": {
         "known_D": [
@@ -350,7 +384,8 @@
             71,
             73
         ],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "47": {
         "known_D": [],
@@ -368,7 +403,8 @@
             89,
             97
         ],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "48": {
         "known_D": [
@@ -397,7 +433,8 @@
             83,
             89
         ],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "50": {
         "known_D": [
@@ -423,7 +460,8 @@
             89,
             97
         ],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "51": {
         "known_D": [
@@ -431,7 +469,8 @@
             17
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "52": {
         "known_D": [
@@ -439,19 +478,22 @@
             -3
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "53": {
         "known_D": [],
         "unramified_primes": [],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "54": {
         "known_D": [
             -2
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "55": {
         "known_D": [
@@ -460,14 +502,16 @@
             -159
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "56": {
         "known_D": [
             -7
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "57": {
         "known_D": [
@@ -477,7 +521,8 @@
             13
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "59": {
         "known_D": [],
@@ -491,43 +536,50 @@
             53,
             79
         ],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "60": {
         "known_D": [],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "61": {
         "known_D": [],
         "unramified_primes": [],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "62": {
         "known_D": [
             -3
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "63": {
         "known_D": [
             -3
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "64": {
         "known_D": [
             -7
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "65": {
         "known_D": [],
         "unramified_primes": [],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "67": {
         "known_D": [
@@ -538,14 +590,16 @@
             -43
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "69": {
         "known_D": [
             -11
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "71": {
         "known_D": [],
@@ -562,12 +616,14 @@
             83,
             89
         ],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "72": {
         "known_D": [],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "73": {
         "known_D": [
@@ -580,7 +636,8 @@
             -127
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "75": {
         "known_D": [
@@ -588,7 +645,8 @@
             -11
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "77": {
         "known_D": [
@@ -596,12 +654,14 @@
             -19
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "79": {
         "known_D": [],
         "unramified_primes": [],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "81": {
         "known_D": [
@@ -609,48 +669,56 @@
             -11
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "83": {
         "known_D": [],
         "unramified_primes": [],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "89": {
         "known_D": [],
         "unramified_primes": [],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "91": {
         "known_D": [
             13
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "95": {
         "known_D": [
             -19
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "101": {
         "known_D": [],
         "unramified_primes": [],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "119": {
         "known_D": [
             -19
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     },
     "131": {
         "known_D": [],
         "unramified_primes": [],
-        "is_complete": false
+        "is_complete": false,
+        "non_cm_points": {}
     },
     "125": {
         "known_D": [
@@ -660,7 +728,12 @@
             509
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {
+            "509": [
+                "(1/2, 3/4)"
+            ]
+        }
     },
     "169": {
         "known_D": [
@@ -669,6 +742,7 @@
             -43
         ],
         "unramified_primes": [],
-        "is_complete": true
+        "is_complete": true,
+        "non_cm_points": {}
     }
 }

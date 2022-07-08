@@ -3,6 +3,8 @@
 Some helpful functions
 """
 
+from sage.all import Integer, Gamma0, ZZ, gcd, prod, kronecker_symbol, prime_range
+
 GENUS_ZERO_LIST = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 16, 18, 25]
 GENUS_ONE_LIST = [11, 14, 15, 17, 19, 20, 21, 24, 27, 32, 36, 49]
 CLASS_NUMBER_ONE_DISCS = {-1, -2, -3, -7, -11, -19, -43, -67, -163}
@@ -28,6 +30,48 @@ HYPERELLIPTIC_VALUES = {
     59,
     71,
 }
+
+D_VALUES = [
+    -9905,
+    -8358,
+    -7910,
+    -6846,
+    -3199,
+    -2289,
+    213,
+    834,
+    1545,
+    1885,
+    1923,
+    2517,
+    2847,
+    4569,
+    5822,
+    6537,
+    7131,
+    7302,
+    7319,
+    7635,
+    7698,
+    7827,
+    7842,
+    7890,
+    7926,
+    7971,
+    8187,
+    8383,
+    8922,
+    9066,
+    9147,
+    9195,
+    9399,
+    9474,
+    9498,
+    9563,
+    9759,
+    9903,
+    9942,
+]
 
 import json
 from hyperelliptic_verifs import try_trbovic_filter
@@ -382,7 +426,7 @@ def search_convenient_d(d_start, d_end):
                             print("d = {} is good".format(d))
 
 
-def search_convenient_d_fast():
+def search_convenient_d_fast(B=None):
     """As explained in a docstring above, Sage struggles to compute ranks,
     sometimes even giving a SignalError! For this reason, a Magma computation
     was run to determine, for -500 < d < 500, which of the genus 1 modular curves
@@ -391,71 +435,98 @@ def search_convenient_d_fast():
     uses the private `_minimally_finite_fast` method above.
     """
     really_convenient = []
-    for d, pre_rank_zero_list in rank_data_dict.items():
+    convenient_count = 0
+    convenient = []
+    # message_throttle = 100
+    # hits_before_next_log = message_throttle
+    # for d, pre_rank_zero_list in rank_data_dict.items():
+    #     hits_before_next_log -= 1
+    #     if hits_before_next_log == 0:
+    #         print(f"Done up to {d}")
+    #         hits_before_next_log = message_throttle
 
-        rank_zero_list = [Integer(x) for x in pre_rank_zero_list]
-        ans = _minimally_finite_fast(rank_zero_list)
-        if d in LPIP:
-            # if we have info on large possible isogeny primes, add that in
-            # users wanting to run this for other ranges should populate
-            # that list, or directly plumb in isogeny_primes here
-            ans += LPIP[d]
-        large_vals = [d for d in ans if d > 100]
-        if set(large_vals).issubset(EASY_LARGE_VALS):
-            if check_mwgp_same_plus(163, d):
-                # print("d = {} is convenient".format(d))
-                # The following runs some automated checks to identify
-                # the hard values one will need to consider
-                # Values not declared hard does not imply that
-                # those are easy to deal with (only maybe more doable)
+    if B is not None:
+        rank_data_dict_filt = {
+            k: rank_data_dict[k] for k in rank_data_dict if k.abs() < B
+        }
+    else:
+        # rank_data_dict_filt = {k: rank_data_dict[k] for k in D_VALUES}
+        rank_data_dict_filt = rank_data_dict
 
-                K = QuadraticField(d)
-                hard_vals = [x for x in ans if not x in rank_zero_list]
-                hard_vals = [x for x in hard_vals if not x in EASY_LARGE_VALS]
+    with open("test.txt", "a") as output_file:
 
-                hard_vals.remove(91)  # all quad pts determined
+        for d, pre_rank_zero_list in rank_data_dict_filt.items():
 
-                vals_to_remove = []
+            rank_zero_list = [Integer(x) for x in pre_rank_zero_list]
+            ans = _minimally_finite_fast(rank_zero_list)
+            if d in LPIP:
+                # if we have info on large possible isogeny primes, add that in.
+                # Users wanting to run this for other ranges should populate
+                # that list, or directly plumb in the isogeny_primes package
+                # here. We have not done this to avoid adding a dependency.
+                ans += LPIP[d]
+            large_vals = [d for d in ans if d > 100]
+            if set(large_vals).issubset(EASY_LARGE_VALS):
+                if check_mwgp_same_plus(163, d):
+                    print("d = {} is convenient".format(d))
+                    # The following runs some automated checks to identify
+                    # the hard values one will need to consider
+                    # Values not declared hard does not imply that
+                    # those are easy to deal with (only maybe more doable)
+                    convenient_count += 1
+                    convenient.append(d)
+                    output_file.write(f"{d}: [],\n")
 
-                for z in hard_vals:
-                    if z in HYPERELLIPTIC_VALUES:
-                        if z != 37:
-                            if not try_trbovic_filter(d, z):
-                                vals_to_remove.append(z)
-                            elif not try_oezman_sieve(d, z):
-                                vals_to_remove.append(z)
-                        else:
-                            # 37 requires special handling
-                            if is_rank_of_twist_zero_minus(37, kronecker_character(d)):
-                                vals_to_remove.append(z)
-                            elif check_mwgp_same_plus(37, d):
-                                if not try_oezman_sieve(d, 37):
-                                    vals_to_remove.append(z)
-                    else:
-                        if str(z) in qdpts_dat:
-                            data_this_z = qdpts_dat[str(z)]
-                            if data_this_z["is_complete"]:
-                                vals_to_remove.append(z)
-                            elif not try_oezman_sieve(d, z):
-                                vals_to_remove.append(z)
-                            elif check_mwgp_same_minus(z, d):
-                                vals_to_remove.append(z)
-                        else:
-                            if check_mwgp_same_minus(z, d):
-                                vals_to_remove.append(z)
-                            elif check_mwgp_same_plus(z, d):
-                                vals_to_remove.append(z)
+                    # K = QuadraticField(d)
+                    # hard_vals = [x for x in ans if not x in rank_zero_list]
+                    # hard_vals = [x for x in hard_vals if not x in EASY_LARGE_VALS]
 
-                hard_vals = [x for x in hard_vals if not x in vals_to_remove]
-                if not hard_vals:
-                    really_convenient.append(d)
+                    # hard_vals.remove(91)  # all quad pts determined
 
-                # if hard_vals == [37]:
-                #     if is_rank_of_twist_zero_minus(37, kronecker_character(d)):
-                #         print("d = {} is really convenient".format(d))
-                #     elif check_mwgp_same_plus(37, d):
-                #         if not try_oezman_sieve(d, 37):
-                #             print("d = {} is really convenient".format(d))
+                    # vals_to_remove = []
 
-                # print(f"hard_vals={hard_vals}\n")
-    return really_convenient
+                    # for z in hard_vals:
+                    #     if z in HYPERELLIPTIC_VALUES:
+                    #         if z != 37:
+                    #             if not try_trbovic_filter(d, z):
+                    #                 vals_to_remove.append(z)
+                    #             elif not try_oezman_sieve(d, z):
+                    #                 vals_to_remove.append(z)
+                    #         else:
+                    #             # 37 requires special handling
+                    #             if is_rank_of_twist_zero_minus(37, kronecker_character(d)):
+                    #                 vals_to_remove.append(z)
+                    #             elif check_mwgp_same_plus(37, d):
+                    #                 if not try_oezman_sieve(d, 37):
+                    #                     vals_to_remove.append(z)
+                    #     else:
+                    #         if str(z) in qdpts_dat:
+                    #             data_this_z = qdpts_dat[str(z)]
+                    #             if data_this_z["is_complete"]:
+                    #                 vals_to_remove.append(z)
+                    #             elif not try_oezman_sieve(d, z):
+                    #                 vals_to_remove.append(z)
+                    #             elif check_mwgp_same_minus(z, d):
+                    #                 vals_to_remove.append(z)
+                    #         else:
+                    #             if check_mwgp_same_minus(z, d):
+                    #                 vals_to_remove.append(z)
+                    #             elif check_mwgp_same_plus(z, d):
+                    #                 vals_to_remove.append(z)
+
+                    # hard_vals = [x for x in hard_vals if not x in vals_to_remove]
+                    # if not hard_vals:
+                    #     really_convenient.append(d)
+
+                    # # if hard_vals == [37]:
+                    # #     if is_rank_of_twist_zero_minus(37, kronecker_character(d)):
+                    # #         print("d = {} is really convenient".format(d))
+                    # #     elif check_mwgp_same_plus(37, d):
+                    # #         if not try_oezman_sieve(d, 37):
+                    # #             print("d = {} is really convenient".format(d))
+
+                    # # print(f"hard_vals={hard_vals}\n")
+    print(f"Total number of convenient is {convenient_count}")
+
+
+# -6846, -2289, 213, 834, 1545, 1885, 1923, 2517, 2847, 4569, 5822, 6537, 7131, 7302, 7319, 7635, 7698, 7827, 7842, 7890, 7926, 7971, 8187, 8383, 8922, 9066, 9147, 9195, 9399, 9474, 9498, 9563, 9759, 9903, 9942

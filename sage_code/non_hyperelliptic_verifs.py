@@ -167,7 +167,7 @@ def try_oezman_sieve(d, N):
         return True
 
     disc_of_quad_field = d if d % 4 == 1 else 4 * d
-    ram_primes = disc_of_quad_field.prime_divisors()
+    ram_primes = Integer(disc_of_quad_field).prime_divisors()
 
     for p in ram_primes:
         if not oezman_sieve(p, N):

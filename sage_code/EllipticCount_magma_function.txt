@@ -1,0 +1,33 @@
+Genus1Values:=[11,14,15,17,19,20,21,24,27,32,36,49];
+R<x> := PolynomialRing(Rationals());
+function EllipticCount(d)
+	f := R![-d,0,1];
+	K<a> := NumberField(f);
+	finalDict := [];
+	for N in Genus1Values do
+		X0N := SmallModularCurve(N);
+		X0Ntw := QuadraticTwist(X0N,d);
+		if Rank(X0Ntw) eq 0 then
+			j_invs := {};
+			X0NK := BaseExtend(X0N,K);
+			Tors, m := TorsionSubgroup(X0NK);
+			num_ers:=0;
+			for P in Tors do
+				if P ne Tors!0 then
+					try
+						a_j_inv := jInvariant(m(P),N);
+						j_invs := j_invs join {a_j_inv};
+					catch e
+						// means the point is a cusp
+						num_ers:=num_ers+1;
+					end try;
+				end if;
+			end for;
+			// print N, j_invs, num_ers, #Cusps(Gamma0(N));
+			if #j_invs ne 0 then
+				Append(~finalDict, <N,#j_invs>);
+			end if;
+		end if;
+	end for;
+	return finalDict;
+end function;

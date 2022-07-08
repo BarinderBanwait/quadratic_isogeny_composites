@@ -52,6 +52,38 @@ procedure EllipticJInvs(d)
 	end for;
 end procedure;
 
+function EllipticCount(d)
+	f := R![-d,0,1];
+	K<a> := NumberField(f);
+	finalDict := [];
+	for N in Genus1Values do
+		X0N := SmallModularCurve(N);
+		X0Ntw := QuadraticTwist(X0N,d);
+		if Rank(X0Ntw) eq 0 then
+			j_invs := {};
+			X0NK := BaseExtend(X0N,K);
+			Tors, m := TorsionSubgroup(X0NK);
+			num_ers:=0;
+			for P in Tors do
+				if P ne Tors!0 then
+					try
+						a_j_inv := jInvariant(m(P),N);
+						j_invs := j_invs join {a_j_inv};
+					catch e
+						// means the point is a cusp
+						num_ers:=num_ers+1;
+					end try;
+				end if;
+			end for;
+			// print N, j_invs, num_ers, #Cusps(Gamma0(N));
+			if #j_invs ne 0 then
+				Append(~finalDict, <N,#j_invs>);
+			end if;
+		end if;
+	end for;
+	return finalDict;
+end function;
+
 procedure CheckTorsionGrowth(d)
 	f := R![-d,0,1];
 	K<a> := NumberField(f);
@@ -80,11 +112,10 @@ function Ranks(d)
 end function;
 
 // Code to generate rank data for subsequent sage computation
-for d in [500..515] do
+for d in [-10000..10000] do
 	if d ne 1 then
 		if d ne 0 then
 			if IsSquarefree(d) then
-				print "doing", d;
 				MyVals:= Ranks(d);
 				Write("RankData.txt", Sprintf("%o: %o", d, MyVals));
 			end if;
