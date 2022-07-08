@@ -6,7 +6,7 @@
 
 # We collect the j-invariants whose isogeny graphs we need to construct
 
-from sage.all import EllipticCurve
+from sage.all import EllipticCurve, Matrix, pari, gp
 from utils import GENUS_ONE_LIST, GENUS_ZERO_LIST
 import logging
 
