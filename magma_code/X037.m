@@ -30,7 +30,7 @@ return preimages;
 end function;
 
 _<x> := PolynomialRing(Rationals());
-K := QuadraticField(213);
+K<a> := QuadraticField(-1);
 _<x> := PolynomialRing(K);
 C := HyperellipticCurve(-x^6-9*x^4-11*x^2+37);
 F<x,y> := FunctionField(C);

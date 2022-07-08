@@ -5,7 +5,7 @@ This generates entries for the table in the appendix
 """
 import json
 import logging
-from sage.all import QuadraticField, cm_j_invariants, magma_free, QQ, EllipticCurve
+from sage.all import QuadraticField, cm_j_invariants, magma_free, EllipticCurve
 from utils import minimally_finite_fast, GENUS_ONE_LIST, HYPERELLIPTIC_VALUES
 from large_possible_isogeny_primes import LPIP
 from isogeny_graphs import unrecorded_isogenies
@@ -27,6 +27,27 @@ def reducer(accumulator, element):
     for key, value in element.items():
         accumulator[key] = accumulator.get(key, 0) + value
     return accumulator
+
+
+def format_elliptic_count_magma_function(d):
+
+    nl = chr(10)
+
+    with open("EllipticCount_magma_function.txt", "r") as magma_file:
+        the_lines = magma_file.read().splitlines()
+
+    return nl.join(the_lines) + nl + f"EllipticCount({d});"
+
+
+def format_preimages_magma_function(d):
+
+    nl = chr(10)
+
+    with open("EllipticCount_magma_function.txt", "r") as magma_file:
+        the_lines = magma_file.read().splitlines()
+
+    return nl.join(the_lines) + nl + f"main({d});"
+
 
 
 def unique_j_inv_count(j_invs_str, K_gen):
@@ -72,12 +93,26 @@ def process_hyperelliptic(d, K_gen, hyperelliptic_vals):
             # is done right at the end of the for loop
             output_dict = {**output_dict, **unrecorded_isogenies_dict}
         else:
-            # 37 requires special handling.
+            # 37 requires special handling
             if EllipticCurve("37b1").quadratic_twist(d).analytic_rank() == 0:
-                isog_count = 2
+                if eval(str(magma_free.eval(format_preimages_magma_function(d)))) == 4:
+                    # then we only have the two Q-rational j-invariants
+                    isog_count = 2
+                    j_inv_list = [-162677523113838677, -9317]
+                    logging.debug(f"Starting isogeny class computation for j-invariants on X0({z})")
+                    unrecorded_isogenies_dict = unrecorded_isogenies(K, j_inv_list, d, z=z)
+                    logging.debug(f"DONE isogeny class computation for j-invariants on X0({z})!")
+                    output_dict = {**output_dict, **unrecorded_isogenies_dict}
+                else:
+                    raise NotImplementedError
             elif check_mwgp_same_plus(37, d):
                 if not try_oezman_sieve(d, 37):
                     isog_count = 2
+                    j_inv_list = [-162677523113838677, -9317]
+                    logging.debug(f"Starting isogeny class computation for j-invariants on X0({z})")
+                    unrecorded_isogenies_dict = unrecorded_isogenies(K, j_inv_list, d, z=z)
+                    logging.debug(f"DONE isogeny class computation for j-invariants on X0({z})!")
+                    output_dict = {**output_dict, **unrecorded_isogenies_dict}
                 else:
                     raise NotImplementedError
             else:
@@ -161,16 +196,6 @@ def process_non_hyperelliptic(d, K_gen, non_hyperelliptic_vals):
     return output_dict
 
 
-def format_magma_function(d):
-
-    nl = chr(10)
-
-    with open("EllipticCount_magma_function.txt", "r") as magma_file:
-        the_lines = magma_file.read().splitlines()
-
-    return nl.join(the_lines) + nl + f"EllipticCount({d});"
-
-
 def quadratic_kenku_solver(d):
     """Attempts to determine all cyclic isogenies of elliptic curves
     over Q-sqrt-d. Returns string of data for the table in the appendix
@@ -209,7 +234,7 @@ def quadratic_kenku_solver(d):
     logging.info(f"my_hyperelliptic_vals = {my_hyperelliptic_vals}")
     logging.info(f"my_non_hyperelliptic_vals = {my_non_hyperelliptic_vals}")
 
-    elliptic_count_magma_str = str(magma_free.eval(format_magma_function(d)))
+    elliptic_count_magma_str = str(magma_free.eval(format_elliptic_count_magma_function(d)))
     elliptic_count_magma_str = elliptic_count_magma_str.replace("<", "(")
     elliptic_count_magma_str = elliptic_count_magma_str.replace(">", ")")
     elliptic_count_dict = dict(eval(elliptic_count_magma_str))

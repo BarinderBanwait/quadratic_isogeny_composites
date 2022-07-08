@@ -25,7 +25,7 @@ function EllipticCount(d)
 			end for;
 			// print N, j_invs, num_ers, #Cusps(Gamma0(N));
 			if #j_invs ne 0 then
-				Append(~finalDict, <N,#j_invs>);
+				Append(~finalDict, <N,j_invs>);
 			end if;
 		end if;
 	end for;

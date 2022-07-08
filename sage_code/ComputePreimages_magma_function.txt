@@ -1,0 +1,29 @@
+ComputePreimages := function(C, phi)
+
+G := AutomorphismGroup(C,[phi]);
+E,m := CurveQuotient(G);
+assert Type(E) eq CrvEll;
+assert RankBound(E) eq 0;
+
+GG, map := MordellWeilGroup(E);
+S := [map(g) : g in GG];
+
+preimages := {};
+
+for P in S do
+    preimageofP := P @@ m;
+    preimages := preimages join Points(preimageofP);
+ end for;
+
+return #preimages;
+end function;
+
+main := function(d)
+    K<a> := QuadraticField(d);
+    _<x> := PolynomialRing(K);
+    C := HyperellipticCurve(-x^6-9*x^4-11*x^2+37);
+    F<x,y> := FunctionField(C);
+    phi := iso< C -> C | [-x,-y,1],[-x,-y,1]>;
+    ans := ComputePreimages(C,phi);
+    return ans;
+end function;
