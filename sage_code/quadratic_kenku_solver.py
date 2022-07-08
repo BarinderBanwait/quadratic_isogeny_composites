@@ -208,7 +208,7 @@ def quadratic_kenku_solver(d):
             f"no large possible isogeny prime data at {d}. Please add to that file first."
         )
 
-    K = QuadraticField(d)
+    K = QuadraticField(d, 'K_gen')
     K_gen = K.gen()
     minimally_finite = minimally_finite_fast(d)
     minimally_finite.extend(LPIP[d])
@@ -234,10 +234,22 @@ def quadratic_kenku_solver(d):
     logging.info(f"my_hyperelliptic_vals = {my_hyperelliptic_vals}")
     logging.info(f"my_non_hyperelliptic_vals = {my_non_hyperelliptic_vals}")
 
-    elliptic_count_magma_str = str(magma_free.eval(format_elliptic_count_magma_function(d)))
-    elliptic_count_magma_str = elliptic_count_magma_str.replace("<", "(")
-    elliptic_count_magma_str = elliptic_count_magma_str.replace(">", ")")
-    elliptic_count_dict = dict(eval(elliptic_count_magma_str))
+    logging.info("Starting elliptic values ...")
+    elliptic_jInv_magma_str = str(magma_free.eval(format_elliptic_count_magma_function(d)))
+    elliptic_jInv_magma_str = elliptic_jInv_magma_str.replace("<", "(")
+    elliptic_jInv_magma_str = elliptic_jInv_magma_str.replace(">", ")")
+    elliptic_jInv_dict = dict(eval(elliptic_jInv_magma_str))
+    elliptic_jInv_dict = {k:[K(a) for a in elliptic_jInv_dict[k] ] for k in elliptic_jInv_dict}
+
+    elliptic_count_dict = {k:len(elliptic_jInv_dict[k]) for k in elliptic_jInv_dict}
+
+    elliptic_unrecorded_isogenies_dict = {}
+    for k in elliptic_count_dict:
+        unrecorded_isogenies_dict = unrecorded_isogenies(K, elliptic_jInv_dict[k], d, z=k)
+        elliptic_unrecorded_isogenies_dict = {**elliptic_unrecorded_isogenies_dict, **unrecorded_isogenies_dict}
+
+    elliptic_count_dict = {**elliptic_count_dict, **elliptic_unrecorded_isogenies_dict}
+    logging.info("Done elliptic values!")
 
     logging.info("Starting hyperelliptic values ...")
     hyperelliptic_count_dict = process_hyperelliptic(d, K_gen, my_hyperelliptic_vals)
