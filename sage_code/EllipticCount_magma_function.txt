@@ -2,7 +2,7 @@ Genus1Values:=[11,14,15,17,19,20,21,24,27,32,36,49];
 R<x> := PolynomialRing(Rationals());
 function EllipticCount(d)
 	f := R![-d,0,1];
-	K<a> := NumberField(f);
+	K<K_gen> := NumberField(f);
 	finalDict := [];
 	for N in Genus1Values do
 		X0N := SmallModularCurve(N);
