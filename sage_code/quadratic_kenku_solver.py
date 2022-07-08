@@ -8,7 +8,7 @@ import logging
 from sage.all import QuadraticField, cm_j_invariants, magma_free, QQ, EllipticCurve
 from utils import minimally_finite_fast, GENUS_ONE_LIST, HYPERELLIPTIC_VALUES
 from large_possible_isogeny_primes import LPIP
-from isogeny_graphs import unrecorded_isogenies, cm_isogenies
+from isogeny_graphs import unrecorded_isogenies
 from hyperelliptic_verifs import try_trbovic_filter
 from non_hyperelliptic_verifs import (
     try_oezman_sieve,
@@ -64,7 +64,7 @@ def process_hyperelliptic(d, K_gen, hyperelliptic_vals):
                     raise NotImplementedError(f"d = {d}, z={z}")
             j_invs_str = data_this_z["non_cm_points"].get(str(d), [])
             isog_count, j_inv_list = unique_j_inv_count(j_invs_str, K_gen)
-            unrecorded_isogenies_dict = unrecorded_isogenies(K, z, j_inv_list)
+            unrecorded_isogenies_dict = unrecorded_isogenies(K, j_inv_list, d, z=z)
             # The following will only update the dictionary with unrecorded isogenies,
             # that is, with degrees which are multiples of z. Updating z itself
             # is done right at the end of the for loop
@@ -123,7 +123,7 @@ def process_non_hyperelliptic(d, K_gen, non_hyperelliptic_vals):
             # unrecorded isogenies
             j_invs_str = data_this_z["non_cm_points"].get(str(d), [])
             isog_count, j_inv_list = unique_j_inv_count(j_invs_str, K_gen)
-            unrecorded_isogenies_dict = unrecorded_isogenies(K, z, j_inv_list)
+            unrecorded_isogenies_dict = unrecorded_isogenies(K, j_inv_list, d, z=z)
             # The following will only update the dictionary with unrecorded isogenies,
             # that is, with degrees which are multiples of z. Updating z itself
             # is done right at the end of the for loop
@@ -227,7 +227,7 @@ def quadratic_kenku_solver(d):
     cm_jinvs = cm_j_invariants(K)
 
     logging.debug("Starting CM computation ...")
-    cm_isogenies_dict = cm_isogenies(K, cm_jinvs, d)
+    cm_isogenies_dict = unrecorded_isogenies(K, cm_jinvs, d, cm=True)
 
     all_dicts = [
         elliptic_count_dict,

@@ -4,49 +4,11 @@
 
 """
 
-# We collect the j-invariants whose isogeny graphs we need to construct
-
 from sage.all import EllipticCurve, Matrix, pari, gp
 from utils import GENUS_ONE_LIST, GENUS_ZERO_LIST
 import logging
 
 logger = logging.getLogger(__name__)
-
-my_js_213 = [
-    -1159088625 / 2097152,
-    -189613868625 / 128,
-    3375 / 2,
-    -140625 / 8,
-    -884736,
-    -882216989 / 131072,
-    -297756989 / 2,
-    -3375,
-    16581375,
-    -32768,
-    -24729001,
-    -121,
-    -9317,
-    -162677523113838677,
-    -884736000,
-    -147197952000,
-    -262537412640768000,
-]
-my_js_438 = [
-    -884736,
-    -882216989 / 131072,
-    -297756989 / 2,
-    -32768,
-    -24729001,
-    -121,
-    -9317,
-    -162677523113838677,
-    -884736000,
-    -147197952000,
-    -262537412640768000,
-]
-
-# Obtainining the unrecorded isogeny degrees is then done as follows
-
 
 def isogeny_degrees(j, K=None):
     """This function was suggested to us by John Cremona - thanks John!"""
@@ -57,28 +19,9 @@ def isogeny_degrees(j, K=None):
     return set(C.matrix()[C.index(E)])
 
 
-def unrecorded_isogenies(K, z, my_js):
-    """This is a wrapper for the above function, to obtain the "unrecorded isogenies"
-    (in the sense of Mazur) from the j-invariants identified above"""
-    isog_classes = [EllipticCurve(j=K(j)).isogeny_class() for j in my_js]
-    isog_mats = [C.matrix() for C in isog_classes]
-    strict_multiples = {
-        a for M in isog_mats for v in M for a in v if a % z == 0 and a > z
-    }
-
-    unrecorded_isogeny_degrees = {}
-    for k in strict_multiples:
-        j_invs_admitting_this_deg = set()
-        for C, M in zip(isog_classes, isog_mats):
-            for i, v in enumerate(M):
-                if k in v:
-                    j_invs_admitting_this_deg.add(C[i].j_invariant())
-        unrecorded_isogeny_degrees[k] = len(j_invs_admitting_this_deg)
-
-    return unrecorded_isogeny_degrees
-
-
 def isogeny_class_via_pari(j, K):
+    """This was my first attempt, but unfortunately doesn't work for all
+    j-invariants for an unknown reason"""
     E = EllipticCurve(j=K(j))
     Epari = pari(E)
     L, M = Epari.ellisomat(1)
@@ -98,12 +41,35 @@ def isogeny_class_via_gp(j, K, d):
     gp(f"myJ = Mod({j_as_list[0]} + {j_as_list[1]} * a, a ^ 2 - {d})");
     gp("v = ellfromj(myJ)");
     gp("E = ellinit(v, K)");
+    logger.debug(f"Constructing isogeny graph with j-invariant {j} ...")
     L,M = gp("ellisomat(E, 1)");
+    logger.debug("Done.")
     jInvs = [EllipticCurve(K, list(eRep)).j_invariant() for eRep in pari(L)]
     return jInvs, Matrix(pari(M))
 
 
-def cm_isogenies(K, my_js, d):
+# def unrecorded_isogenies(K, z, my_js):
+#     """This is a wrapper for the above function, to obtain the "unrecorded isogenies"
+#     (in the sense of Mazur) from the j-invariants identified above"""
+#     isog_classes = [EllipticCurve(j=K(j)).isogeny_class() for j in my_js]
+#     isog_mats = [C.matrix() for C in isog_classes]
+#     strict_multiples = {
+#         a for M in isog_mats for v in M for a in v if a % z == 0 and a > z
+#     }
+
+#     unrecorded_isogeny_degrees = {}
+#     for k in strict_multiples:
+#         j_invs_admitting_this_deg = set()
+#         for C, M in zip(isog_classes, isog_mats):
+#             for i, v in enumerate(M):
+#                 if k in v:
+#                     j_invs_admitting_this_deg.add(C[i].j_invariant())
+#         unrecorded_isogeny_degrees[k] = len(j_invs_admitting_this_deg)
+
+#     return unrecorded_isogeny_degrees
+
+
+def unrecorded_isogenies(K, my_js, d, z=None, cm=False):
     """This is a wrapper for the above function, to obtain the "unrecorded isogenies"
     (in the sense of Mazur) from the j-invariants identified above"""
 
@@ -115,15 +81,21 @@ def cm_isogenies(K, my_js, d):
         isog_classes_j_invs.append(jInvs)
         isog_mats.append(M)
 
-    logger.debug("Computed isogeny classes!")
+    logger.debug("Computed CM isogeny classes!")
 
-    desired_degrees = {
-        a
-        for M in isog_mats
-        for v in M
-        for a in v
-        if a not in set(GENUS_ZERO_LIST).union(set(GENUS_ONE_LIST))
-    }
+    if cm:
+        desired_degrees = {
+            a
+            for M in isog_mats
+            for v in M
+            for a in v
+            if a not in set(GENUS_ZERO_LIST).union(set(GENUS_ONE_LIST))
+        }
+    else:
+        assert z is not None
+        desired_degrees = {
+            a for M in isog_mats for v in M for a in v if a % z == 0 and a > z
+        }
 
     unrecorded_isogeny_degrees = {}
     for k in desired_degrees:
