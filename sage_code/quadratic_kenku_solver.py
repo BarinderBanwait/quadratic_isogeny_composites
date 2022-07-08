@@ -227,7 +227,7 @@ def quadratic_kenku_solver(d):
     cm_jinvs = cm_j_invariants(K)
 
     logging.debug("Starting CM computation ...")
-    cm_isogenies_dict = cm_isogenies(QQ, cm_jinvs)
+    cm_isogenies_dict = cm_isogenies(K, cm_jinvs, d)
 
     all_dicts = [
         elliptic_count_dict,
