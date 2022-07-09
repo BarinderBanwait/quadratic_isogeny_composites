@@ -5,6 +5,7 @@
 """
 
 from sage.all import EllipticCurve, Matrix, pari, gp
+from sage.interfaces.quit import expect_quitall
 from utils import GENUS_ONE_LIST, GENUS_ZERO_LIST
 import logging
 
@@ -43,7 +44,7 @@ def isogeny_class_via_gp(j, K, d):
     gp("E = ellinit(v, K)");
     logger.debug(f"Constructing isogeny graph with j-invariant {j} ...")
     L,M = gp("ellisomat(E, 1)");
-    sage.interfaces.quit.expect_quitall()
+    expect_quitall()
     logger.debug("Done.")
     jInvs = [EllipticCurve(K, list(eRep)).j_invariant() for eRep in pari(L)]
     return jInvs, Matrix(pari(M))
