@@ -8,8 +8,14 @@ from sage.all import EllipticCurve, Matrix, pari, gp
 from sage.interfaces.quit import expect_quitall
 from utils import GENUS_ONE_LIST, GENUS_ZERO_LIST
 import logging
+import signal
 
 logger = logging.getLogger(__name__)
+ISOGENY_CLASS_TIMEOUT_S = 2
+
+def handler(signum, frame):
+    print("Forever is over!")
+    raise TimeoutError("end of time")
 
 def isogeny_degrees(j, K=None):
     """This function was suggested to us by John Cremona - thanks John!"""
@@ -21,11 +27,20 @@ def isogeny_degrees(j, K=None):
 
 
 def isogeny_class_via_sage(j, K, d):
-
     E = EllipticCurve(j=K(j))
     logger.debug(f"Constructing isogeny graph with j-invariant {j} ...")
-    C = E.isogeny_class()
-    logger.debug("Done.")
+    signal.signal(signal.SIGALRM, handler)
+    signal.alarm(ISOGENY_CLASS_TIMEOUT_S)
+    try:
+        C = E.isogeny_class()
+        logger.debug("Done.")
+    except TimeoutError:
+        logger.warning(f"Isogeny graph computation failed after {ISOGENY_CLASS_TIMEOUT_S} seconds."
+        "We will continue assuming that there are no unrecorded isogenies. "
+        "You should directly verify this hereafter in PARI/GP, which is"
+        "much faster at computing isogeny classes."
+        )
+        return [j], Matrix([1])
     return [F.j_invariant() for F in C] , C.matrix()
 
 def isogeny_class_via_pari(j, K):

@@ -95,7 +95,6 @@ def process_hyperelliptic(d, K_gen, hyperelliptic_vals):
         else:
             # 37 requires special handling
             if EllipticCurve("37b1").quadratic_twist(d).analytic_rank() == 0:
-                import pdb; pdb.set_trace()
                 if eval(str(magma_free.eval(format_preimages_magma_function(d))).split(chr(10))[-1]) == 4:
                     # then we only have the two Q-rational j-invariants
                     isog_count = 2
