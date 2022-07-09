@@ -43,7 +43,7 @@ def format_preimages_magma_function(d):
 
     nl = chr(10)
 
-    with open("EllipticCount_magma_function.txt", "r") as magma_file:
+    with open("ComputePreimages_magma_function.txt", "r") as magma_file:
         the_lines = magma_file.read().splitlines()
 
     return nl.join(the_lines) + nl + f"main({d});"
