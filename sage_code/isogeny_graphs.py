@@ -46,8 +46,9 @@ def isogeny_class_via_gp(j, K, d):
     L,M = gp("ellisomat(E, 1)");
     logger.debug("Done.")
     jInvs = [EllipticCurve(K, list(eRep)).j_invariant() for eRep in pari(L)]
+    M_matrix = Matrix(pari(M))
     expect_quitall()
-    return jInvs, Matrix(pari(M))
+    return jInvs, M_matrix
 
 
 def unrecorded_isogenies(K, my_js, d, z=None, cm=False):
