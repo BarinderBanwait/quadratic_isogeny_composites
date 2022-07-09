@@ -20,6 +20,13 @@ def isogeny_degrees(j, K=None):
     return set(C.matrix()[C.index(E)])
 
 
+def isogeny_class_via_sage(j, K=None):
+    if K is None:
+        K = j.parent()
+    E = EllipticCurve(j=K(j))
+    C = E.isogeny_class()
+    return [F.j_invariant() for F in C] , C.matrix()
+
 def isogeny_class_via_pari(j, K):
     """This was my first attempt, but unfortunately doesn't work for all
     j-invariants for an unknown reason"""
@@ -59,7 +66,7 @@ def unrecorded_isogenies(K, my_js, d, z=None, cm=False):
     isog_mats = []
 
     for j in my_js:
-        jInvs, M = isogeny_class_via_gp(j, K, d)
+        jInvs, M = isogeny_class_via_sage(j, K, d)
         isog_classes_j_invs.append(jInvs)
         isog_mats.append(M)
 
