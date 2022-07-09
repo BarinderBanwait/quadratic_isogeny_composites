@@ -20,9 +20,8 @@ def isogeny_degrees(j, K=None):
     return set(C.matrix()[C.index(E)])
 
 
-def isogeny_class_via_sage(j, K=None):
-    if K is None:
-        K = j.parent()
+def isogeny_class_via_sage(j, K, d):
+
     E = EllipticCurve(j=K(j))
     C = E.isogeny_class()
     return [F.j_invariant() for F in C] , C.matrix()
