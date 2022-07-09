@@ -23,7 +23,9 @@ def isogeny_degrees(j, K=None):
 def isogeny_class_via_sage(j, K, d):
 
     E = EllipticCurve(j=K(j))
+    logger.debug(f"Constructing isogeny graph with j-invariant {j} ...")
     C = E.isogeny_class()
+    logger.debug("Done.")
     return [F.j_invariant() for F in C] , C.matrix()
 
 def isogeny_class_via_pari(j, K):
