@@ -43,30 +43,10 @@ def isogeny_class_via_gp(j, K, d):
     gp("E = ellinit(v, K)");
     logger.debug(f"Constructing isogeny graph with j-invariant {j} ...")
     L,M = gp("ellisomat(E, 1)");
+    sage.interfaces.quit.expect_quitall()
     logger.debug("Done.")
     jInvs = [EllipticCurve(K, list(eRep)).j_invariant() for eRep in pari(L)]
     return jInvs, Matrix(pari(M))
-
-
-# def unrecorded_isogenies(K, z, my_js):
-#     """This is a wrapper for the above function, to obtain the "unrecorded isogenies"
-#     (in the sense of Mazur) from the j-invariants identified above"""
-#     isog_classes = [EllipticCurve(j=K(j)).isogeny_class() for j in my_js]
-#     isog_mats = [C.matrix() for C in isog_classes]
-#     strict_multiples = {
-#         a for M in isog_mats for v in M for a in v if a % z == 0 and a > z
-#     }
-
-#     unrecorded_isogeny_degrees = {}
-#     for k in strict_multiples:
-#         j_invs_admitting_this_deg = set()
-#         for C, M in zip(isog_classes, isog_mats):
-#             for i, v in enumerate(M):
-#                 if k in v:
-#                     j_invs_admitting_this_deg.add(C[i].j_invariant())
-#         unrecorded_isogeny_degrees[k] = len(j_invs_admitting_this_deg)
-
-#     return unrecorded_isogeny_degrees
 
 
 def unrecorded_isogenies(K, my_js, d, z=None, cm=False):
@@ -125,7 +105,7 @@ def unrecorded_isogenies(K, my_js, d, z=None, cm=False):
 # )
 # [L, M] = ellisomat(E, 1)
 
-# K = nfinit(a ^ 2 - 5)
+# K = nfinit(a ^ 2 - 213)
 # myJ = Mod(123 + 456 * a, a ^ 2 - 5)
 # v = ellfromj(myJ)
 # E = ellinit(v, K)
