@@ -44,9 +44,9 @@ def isogeny_class_via_gp(j, K, d):
     gp("E = ellinit(v, K)");
     logger.debug(f"Constructing isogeny graph with j-invariant {j} ...")
     L,M = gp("ellisomat(E, 1)");
-    expect_quitall()
     logger.debug("Done.")
     jInvs = [EllipticCurve(K, list(eRep)).j_invariant() for eRep in pari(L)]
+    expect_quitall()
     return jInvs, Matrix(pari(M))
 
 
