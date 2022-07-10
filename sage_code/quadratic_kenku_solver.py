@@ -76,7 +76,7 @@ def process_hyperelliptic(d, K_gen, hyperelliptic_vals):
 
     output_dict = {}
     K = K_gen.parent()
-
+    failed_dict = {}
     for z in hyperelliptic_vals:
         data_this_z = qdpts_dat[str(z)]
         if z != 37:
@@ -86,12 +86,13 @@ def process_hyperelliptic(d, K_gen, hyperelliptic_vals):
             j_invs_str = data_this_z["non_cm_points"].get(str(d), [])
             isog_count, j_inv_list = unique_j_inv_count(j_invs_str, K_gen)
             logging.debug(f"Starting isogeny class computation for j-invariants on X0({z})")
-            unrecorded_isogenies_dict = unrecorded_isogenies(K, j_inv_list, d, z=z)
+            unrecorded_isogenies_dict, non_37_failed_dict = unrecorded_isogenies(K, j_inv_list, d, z=z)
             logging.debug(f"DONE isogeny class computation for j-invariants on X0({z})!")
             # The following will only update the dictionary with unrecorded isogenies,
             # that is, with degrees which are multiples of z. Updating z itself
             # is done right at the end of the for loop
             output_dict = {**output_dict, **unrecorded_isogenies_dict}
+            failed_dict = {**non_37_failed_dict, **failed_dict}
         else:
             # 37 requires special handling
             if EllipticCurve("37b1").quadratic_twist(d).analytic_rank() == 0:
@@ -100,9 +101,10 @@ def process_hyperelliptic(d, K_gen, hyperelliptic_vals):
                     isog_count = 2
                     j_inv_list = [-162677523113838677, -9317]
                     logging.debug(f"Starting isogeny class computation for j-invariants on X0({z})")
-                    unrecorded_isogenies_dict = unrecorded_isogenies(K, j_inv_list, d, z=z)
+                    unrecorded_isogenies_dict, failed_dict_37 = unrecorded_isogenies(K, j_inv_list, d, z=z)
                     logging.debug(f"DONE isogeny class computation for j-invariants on X0({z})!")
                     output_dict = {**output_dict, **unrecorded_isogenies_dict}
+                    failed_dict = {**failed_dict_37, **failed_dict}
                 else:
                     raise NotImplementedError
             elif check_mwgp_same_plus(37, d):
@@ -110,9 +112,10 @@ def process_hyperelliptic(d, K_gen, hyperelliptic_vals):
                     isog_count = 2
                     j_inv_list = [-162677523113838677, -9317]
                     logging.debug(f"Starting isogeny class computation for j-invariants on X0({z})")
-                    unrecorded_isogenies_dict = unrecorded_isogenies(K, j_inv_list, d, z=z)
+                    unrecorded_isogenies_dict, failed_dict_37 = unrecorded_isogenies(K, j_inv_list, d, z=z)
                     logging.debug(f"DONE isogeny class computation for j-invariants on X0({z})!")
                     output_dict = {**output_dict, **unrecorded_isogenies_dict}
+                    failed_dict = {**failed_dict_37, **failed_dict}
                 else:
                     raise NotImplementedError
             else:
@@ -120,7 +123,7 @@ def process_hyperelliptic(d, K_gen, hyperelliptic_vals):
 
         output_dict[z] = isog_count
 
-    return output_dict
+    return output_dict, failed_dict
 
 
 def process_non_hyperelliptic(d, K_gen, non_hyperelliptic_vals):
@@ -132,6 +135,7 @@ def process_non_hyperelliptic(d, K_gen, non_hyperelliptic_vals):
 
     output_dict = {}
     K = K_gen.parent()
+    failed_dict = {}
 
     for z in non_hyperelliptic:
         if str(z) in qdpts_dat:
@@ -161,12 +165,13 @@ def process_non_hyperelliptic(d, K_gen, non_hyperelliptic_vals):
             j_invs_str = data_this_z["non_cm_points"].get(str(d), [])
             isog_count, j_inv_list = unique_j_inv_count(j_invs_str, K_gen)
             logging.debug(f"Starting isogeny class computation for j-invariants on X0({z})")
-            unrecorded_isogenies_dict = unrecorded_isogenies(K, j_inv_list, d, z=z)
+            unrecorded_isogenies_dict, non_hyperelliptic_failed = unrecorded_isogenies(K, j_inv_list, d, z=z)
             logging.debug(f"DONE isogeny class computation for j-invariants on X0({z})!")
             # The following will only update the dictionary with unrecorded isogenies,
             # that is, with degrees which are multiples of z. Updating z itself
             # is done right at the end of the for loop
             output_dict = {**output_dict, **unrecorded_isogenies_dict}
+            failed_dict = {**non_hyperelliptic_failed, **failed_dict}
         else:
             # this means that the exceptional points have not been determined. In this
             # case we can still try the method of the Appendix
@@ -193,7 +198,7 @@ def process_non_hyperelliptic(d, K_gen, non_hyperelliptic_vals):
 
         output_dict[z] = isog_count
 
-    return output_dict
+    return output_dict, failed_dict
 
 
 def quadratic_kenku_solver(d):
@@ -234,6 +239,8 @@ def quadratic_kenku_solver(d):
     logging.info(f"my_hyperelliptic_vals = {my_hyperelliptic_vals}")
     logging.info(f"my_non_hyperelliptic_vals = {my_non_hyperelliptic_vals}")
 
+    failed_dict = {}
+
     logging.info("Starting elliptic values ...")
     elliptic_jInv_magma_str = str(magma_free.eval(format_elliptic_count_magma_function(d)))
     elliptic_jInv_magma_str = elliptic_jInv_magma_str.replace("<", "(")
@@ -245,20 +252,23 @@ def quadratic_kenku_solver(d):
 
     elliptic_unrecorded_isogenies_dict = {}
     for k in elliptic_count_dict:
-        unrecorded_isogenies_dict = unrecorded_isogenies(K, elliptic_jInv_dict[k], d, z=k)
+        unrecorded_isogenies_dict, elliptic_failed_dict = unrecorded_isogenies(K, elliptic_jInv_dict[k], d, z=k)
         elliptic_unrecorded_isogenies_dict = {**elliptic_unrecorded_isogenies_dict, **unrecorded_isogenies_dict}
+        failed_dict = {**elliptic_failed_dict, **failed_dict}
 
     elliptic_count_dict = {**elliptic_count_dict, **elliptic_unrecorded_isogenies_dict}
     logging.info("Done elliptic values!")
 
     logging.info("Starting hyperelliptic values ...")
-    hyperelliptic_count_dict = process_hyperelliptic(d, K_gen, my_hyperelliptic_vals)
+    hyperelliptic_count_dict, hyperelliptic_failed_dict = process_hyperelliptic(d, K_gen, my_hyperelliptic_vals)
+    failed_dict = {**hyperelliptic_failed_dict, **failed_dict}
     logging.info("Done hyperelliptic values!")
 
     logging.info("Starting non-hyperelliptic values ...")
-    non_hyperelliptic_count_dict = process_non_hyperelliptic(
+    non_hyperelliptic_count_dict, non_hyperelliptic_failed_dict = process_non_hyperelliptic(
         d, K_gen, my_non_hyperelliptic_vals
     )
+    failed_dict = {**non_hyperelliptic_failed_dict, **failed_dict}
     logging.info("Done non-hyperelliptic values!")
 
     print(f"hyperelliptic_count = {hyperelliptic_count_dict}")
@@ -267,7 +277,9 @@ def quadratic_kenku_solver(d):
     cm_jinvs = cm_j_invariants(K)
 
     logging.debug("Starting CM computation ...")
-    cm_isogenies_dict = unrecorded_isogenies(K, cm_jinvs, d, cm=True)
+    cm_isogenies_dict, cm_failed_dict = unrecorded_isogenies(K, cm_jinvs, d, cm=True)
+    failed_dict = {**cm_failed_dict, **failed_dict}
+
     logging.debug("Computed CM isogeny classes!")
     all_dicts = [
         elliptic_count_dict,
@@ -277,7 +289,7 @@ def quadratic_kenku_solver(d):
     ]
     ans = reduce(reducer, all_dicts, {})
     ans = {k: ans[k] for k in ans if ans[k] != 0}
-    return ans
+    return ans, failed_dict
 
 
 if __name__ == "__main__":
@@ -289,5 +301,6 @@ if __name__ == "__main__":
         level=loglevel,
     )
     logging.debug("Debugging level for log messages set.")
-    ans = quadratic_kenku_solver(213)
+    ans, failed_dict = quadratic_kenku_solver(213)
     logging.info(f"final answer is {ans}")
+    logging.info(f"failed dict is {failed_dict}")

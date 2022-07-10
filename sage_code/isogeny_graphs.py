@@ -11,7 +11,7 @@ import logging
 import signal
 
 logger = logging.getLogger(__name__)
-ISOGENY_CLASS_TIMEOUT_S = 30
+ISOGENY_CLASS_TIMEOUT_S = 2
 
 def handler(signum, frame):
     raise TimeoutError("end of time")
@@ -39,7 +39,8 @@ def isogeny_class_via_sage(j, K, d):
         "unrecorded isogenies. You should directly verify this hereafter in "
         "PARI/GP, which is much faster at computing isogeny classes."
         )
-        return [j], Matrix([1])
+        # return [j], Matrix([1])
+        return None, None
     return [F.j_invariant() for F in C] , C.matrix()
 
 def isogeny_class_via_pari(j, K):
@@ -79,11 +80,16 @@ def unrecorded_isogenies(K, my_js, d, z=None, cm=False):
 
     isog_classes_j_invs = []
     isog_mats = []
-
+    failed_dict = {}
     for j in my_js:
         jInvs, M = isogeny_class_via_sage(j, K, d)
-        isog_classes_j_invs.append(jInvs)
-        isog_mats.append(M)
+        if jInvs is not None:
+            isog_classes_j_invs.append(jInvs)
+            isog_mats.append(M)
+        else:
+            # means we got a failure
+            failed_dict[j] = z if z else 0
+
 
     if cm:
         desired_degrees = {
@@ -108,7 +114,7 @@ def unrecorded_isogenies(K, my_js, d, z=None, cm=False):
                     j_invs_admitting_this_deg.add(C[i])
         unrecorded_isogeny_degrees[k] = len(j_invs_admitting_this_deg)
 
-    return unrecorded_isogeny_degrees
+    return unrecorded_isogeny_degrees, failed_dict
 
 
 # Then run the following to verify the main claim of Section 9 of the paper
