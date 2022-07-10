@@ -25,34 +25,6 @@ def isogeny_degrees(j, K=None):
     return set(C.matrix()[C.index(E)])
 
 
-def isogeny_class_via_sage(j, K, d):
-    E = EllipticCurve(j=K(j))
-    logger.debug(f"Constructing isogeny graph with j-invariant {j} ...")
-    signal.signal(signal.SIGALRM, handler)
-    signal.alarm(ISOGENY_CLASS_TIMEOUT_S)
-    try:
-        C = E.isogeny_class()
-        logger.debug("Done.")
-    except TimeoutError:
-        logger.warning(f"Isogeny graph computation failed after {ISOGENY_CLASS_TIMEOUT_S} seconds. "
-        "We will continue with the computation, assuming that there are no "
-        "unrecorded isogenies. You should directly verify this hereafter in "
-        "PARI/GP, which is much faster at computing isogeny classes."
-        )
-        # return [j], Matrix([1])
-        return None, None
-    return [F.j_invariant() for F in C] , C.matrix()
-
-def isogeny_class_via_pari(j, K):
-    """This was my first attempt, but unfortunately doesn't work for all
-    j-invariants for an unknown reason"""
-    E = EllipticCurve(j=K(j))
-    Epari = pari(E)
-    L, M = Epari.ellisomat(1)
-    jInvs = [EllipticCurve(K, list(eRep)).j_invariant() for eRep in L]
-    return jInvs, Matrix(M)
-
-
 def isogeny_class_via_gp(j, K, d):
     """The above function using the PARI C library functions worked for
     some j-invariants, but not for others. I have no idea why?!? Anyway,
@@ -72,6 +44,41 @@ def isogeny_class_via_gp(j, K, d):
     M_matrix = Matrix(pari(M))
     expect_quitall()
     return jInvs, M_matrix
+
+
+def isogeny_class_via_sage(j, K, d):
+    E = EllipticCurve(j=K(j))
+    logger.debug(f"Constructing isogeny graph with j-invariant {j} ...")
+    signal.signal(signal.SIGALRM, handler)
+    signal.alarm(ISOGENY_CLASS_TIMEOUT_S)
+    try:
+        C = E.isogeny_class()
+        logger.debug("Done.")
+    except TimeoutError:
+        logger.warning(f"Isogeny graph computation failed after {ISOGENY_CLASS_TIMEOUT_S} seconds. "
+        "We will continue with the computation, assuming that there are no "
+        "unrecorded isogenies. You should directly verify this hereafter in "
+        "PARI/GP, which is much faster at computing isogeny classes."
+        )
+        # return [j], Matrix([1])
+        try:
+            logger.info("OK so now trying the gp thing")
+            L,M = isogeny_class_via_gp(j, K, d)
+            return L, M
+        except TimeoutError:
+            # now we really can't do anything more
+            logger.info("oh dear oh dear oh dear")
+            return None, None
+    return [F.j_invariant() for F in C] , C.matrix()
+
+def isogeny_class_via_pari(j, K):
+    """This was my first attempt, but unfortunately doesn't work for all
+    j-invariants for an unknown reason"""
+    E = EllipticCurve(j=K(j))
+    Epari = pari(E)
+    L, M = Epari.ellisomat(1)
+    jInvs = [EllipticCurve(K, list(eRep)).j_invariant() for eRep in L]
+    return jInvs, Matrix(M)
 
 
 def unrecorded_isogenies(K, my_js, d, z=None, cm=False):
