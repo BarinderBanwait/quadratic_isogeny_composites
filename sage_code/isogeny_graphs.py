@@ -11,7 +11,7 @@ import logging
 import signal
 
 logger = logging.getLogger(__name__)
-ISOGENY_CLASS_TIMEOUT_S = 2
+ISOGENY_CLASS_TIMEOUT_S = 30
 
 def handler(signum, frame):
     raise TimeoutError("end of time")
@@ -48,7 +48,7 @@ def isogeny_class_via_gp(j, K, d):
 
 def attempt_gp_comp(j, K, d):
     signal.signal(signal.SIGALRM, handler)
-    signal.alarm(5)
+    signal.alarm(ISOGENY_CLASS_TIMEOUT_S)
     try:
         logger.info("OK so now trying the gp thing")
         L,M = isogeny_class_via_gp(j, K, d)
