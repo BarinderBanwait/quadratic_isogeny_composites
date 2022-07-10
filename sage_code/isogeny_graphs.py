@@ -67,6 +67,7 @@ def isogeny_class_via_sage(j, K, d):
     try:
         C = E.isogeny_class()
         logger.debug("Done.")
+        return [F.j_invariant() for F in C] , C.matrix()
     except TimeoutError:
         logger.warning(f"Isogeny graph computation failed after {ISOGENY_CLASS_TIMEOUT_S} seconds. "
         "We will continue with the computation, assuming that there are no "
@@ -76,7 +77,7 @@ def isogeny_class_via_sage(j, K, d):
         # return [j], Matrix([1])
 
         L,M = attempt_gp_comp(j, K, d)
-    return [F.j_invariant() for F in C] , C.matrix()
+        return L,M
 
 def isogeny_class_via_pari(j, K):
     """This was my first attempt, but unfortunately doesn't work for all
