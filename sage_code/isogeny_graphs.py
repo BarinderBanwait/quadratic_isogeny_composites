@@ -46,6 +46,19 @@ def isogeny_class_via_gp(j, K, d):
     return jInvs, M_matrix
 
 
+def attempt_gp_comp(j, K, d):
+    signal.signal(signal.SIGALRM, handler)
+    signal.alarm(5)
+    try:
+        logger.info("OK so now trying the gp thing")
+        L,M = isogeny_class_via_gp(j, K, d)
+        logger.info("yay that worked!! :)")
+        return L, M
+    except TimeoutError:
+        # now we really can't do anything more
+        logger.info("oh dear oh dear oh dear")
+        return None, None
+
 def isogeny_class_via_sage(j, K, d):
     E = EllipticCurve(j=K(j))
     logger.debug(f"Constructing isogeny graph with j-invariant {j} ...")
@@ -61,17 +74,8 @@ def isogeny_class_via_sage(j, K, d):
         "PARI/GP, which is much faster at computing isogeny classes."
         )
         # return [j], Matrix([1])
-        signal.signal(signal.SIGALRM, handler)
-        signal.alarm(ISOGENY_CLASS_TIMEOUT_S)
-        try:
-            logger.info("OK so now trying the gp thing")
-            L,M = isogeny_class_via_gp(j, K, d)
-            logger.info("yay that worked!! :)")
-            return L, M
-        except TimeoutError:
-            # now we really can't do anything more
-            logger.info("oh dear oh dear oh dear")
-            return None, None
+
+        L,M = attempt_gp_comp(j, K, d)
     return [F.j_invariant() for F in C] , C.matrix()
 
 def isogeny_class_via_pari(j, K):
