@@ -453,7 +453,7 @@ def search_convenient_d_fast(B=None):
         # rank_data_dict_filt = {k: rank_data_dict[k] for k in D_VALUES}
         rank_data_dict_filt = rank_data_dict
 
-    with open("test.txt", "a") as output_file:
+    with open("convenient_values.txt", "w") as output_file:
 
         for d, pre_rank_zero_list in rank_data_dict_filt.items():
 
