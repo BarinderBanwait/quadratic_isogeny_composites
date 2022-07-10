@@ -61,14 +61,14 @@ def isogeny_class_via_sage(j, K, d):
         "PARI/GP, which is much faster at computing isogeny classes."
         )
         # return [j], Matrix([1])
+        signal.signal(signal.SIGALRM, handler)
+        signal.alarm(ISOGENY_CLASS_TIMEOUT_S)
         try:
             logger.info("OK so now trying the gp thing")
             L,M = isogeny_class_via_gp(j, K, d)
             logger.info("yay that worked!! :)")
             return L, M
         except TimeoutError:
-            signal.signal(signal.SIGALRM, handler)
-            signal.alarm(ISOGENY_CLASS_TIMEOUT_S)
             # now we really can't do anything more
             logger.info("oh dear oh dear oh dear")
             return None, None
