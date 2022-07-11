@@ -5,7 +5,7 @@ E,m := CurveQuotient(G);
 assert Type(E) eq CrvEll;
 assert AnalyticRank(E) eq 0;
 
-GG, map := MordellWeilGroup(E);
+GG, map := TorsionSubgroup(E);
 S := [map(g) : g in GG];
 
 preimages := {};
