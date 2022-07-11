@@ -7,7 +7,7 @@ function EllipticCount(d)
 	for N in Genus1Values do
 		X0N := SmallModularCurve(N);
 		X0Ntw := QuadraticTwist(X0N,d);
-		if Rank(X0Ntw) eq 0 then
+		if AnalyticRank(X0Ntw) eq 0 then
 			j_invs := {};
 			X0NK := BaseExtend(X0N,K);
 			Tors, m := TorsionSubgroup(X0NK);
