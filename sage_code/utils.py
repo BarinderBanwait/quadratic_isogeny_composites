@@ -3,7 +3,16 @@
 Some helpful functions
 """
 
-from sage.all import Integer, Gamma0, ZZ, gcd, prod, kronecker_symbol, prime_range
+from sage.all import (
+    Integer,
+    Gamma0,
+    ZZ,
+    gcd,
+    prod,
+    kronecker_symbol,
+    prime_range,
+    kronecker_character,
+)
 
 GENUS_ZERO_LIST = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 16, 18, 25]
 GENUS_ONE_LIST = [11, 14, 15, 17, 19, 20, 21, 24, 27, 32, 36, 49]
@@ -30,41 +39,6 @@ HYPERELLIPTIC_VALUES = {
     59,
     71,
 }
-
-D_VALUES = [
-    -6846,
-    -2289,
-    213,
-    834,
-    1545,
-    1885,
-    1923,
-    2517,
-    2847,
-    4569,
-    5822,
-    6537,
-    7131,
-    7302,
-    7319,
-    7635,
-    7698,
-    7827,
-    7842,
-    7890,
-    7926,
-    7971,
-    8383,
-    8922,
-    9066,
-    9147,
-    9195,
-    9399,
-    9474,
-    9563,
-    9759,
-    9903,
-]
 
 import json
 from hyperelliptic_verifs import try_trbovic_filter
