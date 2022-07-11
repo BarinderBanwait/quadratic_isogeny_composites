@@ -110,14 +110,14 @@ def format_preimages_magma_function(d):
 def print_master_table(ans_dicts):
 
     unique_count_dict = {
-        d: sorted(list(set(ans_dicts[d].values())), reverse=True) for d in LPIP
+        d: sorted(list(set(ans_dicts[d].values())), reverse=True) for d in D_VALUES
     }
     largest_isogeny_count = max([a[1] for a in unique_count_dict.values()])
     print(f"You need {largest_isogeny_count+2} columns in the table")
     unique_counts = list(range(1, largest_isogeny_count + 1)) + [+Infinity]
     unique_counts.sort(reverse=True)
 
-    for d in LPIP:
+    for d in D_VALUES:
         ans_dict = ans_dicts[d]
         count_dict = {
             k: sorted([a for a in ans_dict if ans_dict[a] == k]) for k in unique_counts
