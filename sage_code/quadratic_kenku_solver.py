@@ -22,6 +22,7 @@ from non_hyperelliptic_verifs import (
 )
 from utils import check_mwgp_same_plus
 from functools import reduce
+import signal
 
 QUADRATIC_POINTS_DATA_PATH = "quadratic_points_catalogue.json"
 
@@ -29,7 +30,7 @@ QUADRATIC_POINTS_DATA_PATH = "quadratic_points_catalogue.json"
 # from utils.py
 
 D_VALUES = [
-    -6846,
+    # -6846,
     -2289,
     # 213,
     # 834,
@@ -185,6 +186,7 @@ def process_hyperelliptic(d, K_gen, hyperelliptic_vals):
         else:
             # 37 requires special handling
             if EllipticCurve("37b1").quadratic_twist(d).analytic_rank() == 0:
+                signal.alarm(0)
                 if (
                     eval(
                         str(magma.eval(format_preimages_magma_function(d))).split(
@@ -355,9 +357,7 @@ def quadratic_kenku_solver(d):
     failed_dict = {}
 
     logging.info("Starting elliptic values ...")
-    elliptic_jInv_magma_str = str(
-        magma.eval(format_elliptic_count_magma_function(d))
-    )
+    elliptic_jInv_magma_str = str(magma.eval(format_elliptic_count_magma_function(d)))
     elliptic_jInv_magma_str = elliptic_jInv_magma_str.replace("<", "(")
     elliptic_jInv_magma_str = elliptic_jInv_magma_str.replace(">", ")")
     elliptic_jInv_dict = dict(eval(elliptic_jInv_magma_str))
