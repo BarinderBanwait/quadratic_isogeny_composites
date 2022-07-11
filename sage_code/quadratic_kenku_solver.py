@@ -357,6 +357,7 @@ def quadratic_kenku_solver(d):
     failed_dict = {}
 
     logging.info("Starting elliptic values ...")
+    signal.alarm(0)
     elliptic_jInv_magma_str = str(magma.eval(format_elliptic_count_magma_function(d)))
     elliptic_jInv_magma_str = elliptic_jInv_magma_str.replace("<", "(")
     elliptic_jInv_magma_str = elliptic_jInv_magma_str.replace(">", ")")
