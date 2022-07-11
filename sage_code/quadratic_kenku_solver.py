@@ -8,7 +8,7 @@ import logging
 from sage.all import (
     QuadraticField,
     cm_j_invariants,
-    magma_free,
+    magma,
     EllipticCurve,
     Infinity,
 )
@@ -187,7 +187,7 @@ def process_hyperelliptic(d, K_gen, hyperelliptic_vals):
             if EllipticCurve("37b1").quadratic_twist(d).analytic_rank() == 0:
                 if (
                     eval(
-                        str(magma_free.eval(format_preimages_magma_function(d))).split(
+                        str(magma.eval(format_preimages_magma_function(d))).split(
                             chr(10)
                         )[-1]
                     )
@@ -356,7 +356,7 @@ def quadratic_kenku_solver(d):
 
     logging.info("Starting elliptic values ...")
     elliptic_jInv_magma_str = str(
-        magma_free.eval(format_elliptic_count_magma_function(d))
+        magma.eval(format_elliptic_count_magma_function(d))
     )
     elliptic_jInv_magma_str = elliptic_jInv_magma_str.replace("<", "(")
     elliptic_jInv_magma_str = elliptic_jInv_magma_str.replace(">", ")")
