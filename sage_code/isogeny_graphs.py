@@ -9,7 +9,7 @@ from sage.interfaces.quit import expect_quitall
 from utils import GENUS_ONE_LIST, GENUS_ZERO_LIST
 import logging
 
-from timeout import timeout
+from timeout import timeout, TimeoutError
 
 logger = logging.getLogger(__name__)
 ISOGENY_CLASS_TIMEOUT_S = 30
