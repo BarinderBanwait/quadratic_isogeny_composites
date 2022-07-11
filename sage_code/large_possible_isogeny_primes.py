@@ -1,7 +1,8 @@
 """large_possible_isogeny_primes.py
 
 This file just records large possible isogeny primes, obtained from running
-Isogeny Primes, by Banwait-Derickx.
+Isogeny Primes, by Banwait-Derickx. This was generated from a script (to eliminate
+copy/paste or typo errors).
 
 """
 
