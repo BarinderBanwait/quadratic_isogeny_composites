@@ -30,7 +30,7 @@ QUADRATIC_POINTS_DATA_PATH = "quadratic_points_catalogue.json"
 # from utils.py
 
 D_VALUES = [
-    # -6846,
+    -6846,
     -2289,
     # 213,
     # 834,
@@ -110,7 +110,7 @@ def format_preimages_magma_function(d):
 def print_master_table(ans_dicts):
 
     unique_count_dict = {
-        d: sorted(list(set(ans_dict[d].values())), reverse=True) for d in LPIP
+        d: sorted(list(set(ans_dicts[d].values())), reverse=True) for d in LPIP
     }
     largest_isogeny_count = max([a[1] for a in unique_count_dict.values()])
     print(f"You need {largest_isogeny_count+2} columns in the table")
