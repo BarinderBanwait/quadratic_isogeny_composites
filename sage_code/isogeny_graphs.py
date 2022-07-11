@@ -8,13 +8,14 @@ from sage.all import EllipticCurve, Matrix, pari, gp
 from sage.interfaces.quit import expect_quitall
 from utils import GENUS_ONE_LIST, GENUS_ZERO_LIST
 import logging
-import signal
+
+from timeout import timeout
 
 logger = logging.getLogger(__name__)
 ISOGENY_CLASS_TIMEOUT_S = 30
 
-def handler(signum, frame):
-    raise TimeoutError("end of time")
+# def handler(signum, frame):
+#     raise TimeoutError("end of time")
 
 def isogeny_degrees(j, K=None):
     """This function was suggested to us by John Cremona - thanks John!"""
@@ -45,40 +46,37 @@ def isogeny_class_via_gp(j, K, d):
     expect_quitall()
     return jInvs, M_matrix
 
-
+@timeout(ISOGENY_CLASS_TIMEOUT_S)
 def attempt_gp_comp(j, K, d):
-    signal.signal(signal.SIGALRM, handler)
-    signal.alarm(ISOGENY_CLASS_TIMEOUT_S)
     try:
         logger.info("OK so now trying the gp thing")
         L,M = isogeny_class_via_gp(j, K, d)
         logger.info("yay that worked!! :)")
-        signal.alarm(0)
         return L, M
     except TimeoutError:
         # now we really can't do anything more
         logger.info("oh dear oh dear oh dear")
-        signal.alarm(0)
         return None, None
+
+@timeout(ISOGENY_CLASS_TIMEOUT_S)
+def timed_isogeny_class(E):
+    return E.isogeny_class()
+
 
 def isogeny_class_via_sage(j, K, d):
     E = EllipticCurve(j=K(j))
     logger.debug(f"Constructing isogeny graph with j-invariant {j} ...")
-    signal.signal(signal.SIGALRM, handler)
-    signal.alarm(ISOGENY_CLASS_TIMEOUT_S)
     try:
-        C = E.isogeny_class()
+        C = timed_isogeny_class(E)
         logger.debug("Done.")
-        signal.alarm(0)
         return [F.j_invariant() for F in C] , C.matrix()
-    except Exception:
-        logger.warning(f"Isogeny graph computation failed after {ISOGENY_CLASS_TIMEOUT_S} seconds. "
+    except Exception as err_msg:
+        logger.warning(f"Isogeny graph computation failed with message: {err_msg} . "
         "We will continue with the computation, assuming that there are no "
         "unrecorded isogenies. You should directly verify this hereafter in "
         "PARI/GP, which is much faster at computing isogeny classes."
         )
         L,M = attempt_gp_comp(j, K, d)
-        signal.alarm(0)
         return L,M
     # except Exception:
     #     logger.warning(f"Isogeny graph computation with j-invariant {j} failed. "
