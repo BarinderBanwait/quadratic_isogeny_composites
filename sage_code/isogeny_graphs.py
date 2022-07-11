@@ -74,10 +74,15 @@ def isogeny_class_via_sage(j, K, d):
         "unrecorded isogenies. You should directly verify this hereafter in "
         "PARI/GP, which is much faster at computing isogeny classes."
         )
-        # return [j], Matrix([1])
-
         L,M = attempt_gp_comp(j, K, d)
         return L,M
+    except Exception:
+        logger.warning(f"Isogeny graph computation with j-invariant {j} failed. "
+        "We will continue with the computation, assuming that there are no "
+        "unrecorded isogenies. You should directly verify this hereafter in "
+        "PARI/GP."
+        )
+        return None, None
 
 def isogeny_class_via_pari(j, K):
     """This was my first attempt, but unfortunately doesn't work for all
