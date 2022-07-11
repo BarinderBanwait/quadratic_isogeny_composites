@@ -49,13 +49,13 @@ def isogeny_class_via_gp(j, K, d):
 @timeout(ISOGENY_CLASS_TIMEOUT_S)
 def attempt_gp_comp(j, K, d):
     try:
-        logger.info("OK so now trying the gp thing")
         L,M = isogeny_class_via_gp(j, K, d)
-        logger.info("yay that worked!! :)")
+        logger.info("PARI/GP computation worked!! :)")
         return L, M
     except TimeoutError:
         # now we really can't do anything more
-        logger.info("oh dear oh dear oh dear")
+        logger.info("PARI/GP took too long, assuming no unrecorded isogenies "
+        "here, but you should check this directly in PARI.")
         return None, None
 
 @timeout(ISOGENY_CLASS_TIMEOUT_S)
@@ -72,9 +72,7 @@ def isogeny_class_via_sage(j, K, d):
         return [F.j_invariant() for F in C] , C.matrix()
     except Exception as err_msg:
         logger.warning(f"Isogeny graph computation failed with message: {err_msg} . "
-        "We will continue with the computation, assuming that there are no "
-        "unrecorded isogenies. You should directly verify this hereafter in "
-        "PARI/GP, which is much faster at computing isogeny classes."
+        "We will now attempt the same computation in PARI/GP ... "
         )
         L,M = attempt_gp_comp(j, K, d)
         return L,M
