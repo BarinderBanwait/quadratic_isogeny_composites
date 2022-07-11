@@ -54,7 +54,7 @@ def attempt_gp_comp(j, K, d):
         return L, M
     except TimeoutError:
         # now we really can't do anything more
-        logger.info("PARI/GP took too long, assuming no unrecorded isogenies "
+        logger.info("PARI/GP took too long; assuming no unrecorded isogenies "
         "here, but you should check this directly in PARI.")
         return None, None
 
@@ -71,18 +71,12 @@ def isogeny_class_via_sage(j, K, d):
         logger.debug("Done.")
         return [F.j_invariant() for F in C] , C.matrix()
     except Exception as err_msg:
-        logger.warning(f"Isogeny graph computation failed with message: {err_msg} . "
+        logger.warning(f"Isogeny graph computation failed with message: {err_msg}. "
         "We will now attempt the same computation in PARI/GP ... "
         )
         L,M = attempt_gp_comp(j, K, d)
         return L,M
-    # except Exception:
-    #     logger.warning(f"Isogeny graph computation with j-invariant {j} failed. "
-    #     "We will continue with the computation, assuming that there are no "
-    #     "unrecorded isogenies. You should directly verify this hereafter in "
-    #     "PARI/GP."
-    #     )
-    #     return None, None
+
 
 def isogeny_class_via_pari(j, K):
     """This was my first attempt, but unfortunately doesn't work for all
@@ -137,27 +131,12 @@ def unrecorded_isogenies(K, my_js, d, z=None, cm=False):
     return unrecorded_isogeny_degrees, failed_dict
 
 
-# Then run the following to verify the main claim of Section 9 of the paper
-
-# unrecorded_isogenies(213, my_js_213)
-# unrecorded_isogenies(438, my_js_438)
-
-# K = nfinit(Pol(Vecrev([-1, -1, 1])))
-# E = ellinit(
-#     [
-#         Pol(Vecrev([1, 0])),
-#         Pol(Vecrev([1, 1])),
-#         Pol(Vecrev([0, 1])),
-#         Pol(Vecrev([0, 1])),
-#         Pol(Vecrev([0, 0])),
-#     ],
-#     K,
-# )
-# [L, M] = ellisomat(E, 1)
+# If isogeny computations fail, the following is how you can do it directly
+# in PARI/GP.
 
 # K = nfinit(a ^ 2 - 213)
 # myJ = Mod(123 + 456 * a, a ^ 2 - 5)
 # v = ellfromj(myJ)
 # E = ellinit(v, K)
-# ellisomat(E, 1)
+# [L, M] = ellisomat(E, 1)
 # test = ellinit(L[1]).j
