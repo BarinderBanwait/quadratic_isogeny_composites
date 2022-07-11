@@ -3,7 +3,7 @@ ComputePreimages := function(C, phi)
 G := AutomorphismGroup(C,[phi]);
 E,m := CurveQuotient(G);
 assert Type(E) eq CrvEll;
-assert RankBound(E) eq 0;
+assert AnalyticRank(E) eq 0;
 
 GG, map := MordellWeilGroup(E);
 S := [map(g) : g in GG];
