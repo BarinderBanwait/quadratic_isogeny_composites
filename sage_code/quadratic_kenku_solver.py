@@ -376,6 +376,8 @@ def quadratic_kenku_solver(d):
 
     elliptic_count_dict = {k: len(elliptic_jInv_dict[k]) for k in elliptic_jInv_dict}
 
+    print(f"A ell count dict is {elliptic_count_dict}")
+
     elliptic_unrecorded_isogenies_dict = {}
     for k in elliptic_count_dict:
         unrecorded_isogenies_dict, elliptic_failed_dict = unrecorded_isogenies(
@@ -387,8 +389,11 @@ def quadratic_kenku_solver(d):
         }
         failed_dict = {**elliptic_failed_dict, **failed_dict}
 
+    print(f"B ell unrecorded is {elliptic_unrecorded_isogenies_dict}")
     elliptic_count_dict = {**elliptic_count_dict, **elliptic_unrecorded_isogenies_dict}
+    print(f"C ell count dict is {elliptic_count_dict}")
     logging.info("Done elliptic values!")
+    return {}, {}
 
     logging.info("Starting hyperelliptic values ...")
     hyperelliptic_count_dict, hyperelliptic_failed_dict = process_hyperelliptic(
