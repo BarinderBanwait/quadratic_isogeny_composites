@@ -1,6 +1,29 @@
 """quadratic_kenku_solver.py
 
-This generates entries for the table in the appendix
+This generates entries for the table in the appendix. This can be used
+to generate other values.
+
+    ====================================================================
+
+    This file is part of Quadratic Kenku Solver.
+
+    Copyright (C) 2022 Barinder S. Banwait, Filip Najman, and Oana
+    Padurariu
+
+    Quadratic Kenku Solver is free software: you can redistribute it
+    and/or modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation, either version 3 of
+    the License, or any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+    ====================================================================
 
 """
 import json
@@ -38,15 +61,15 @@ D_VALUES = [
     # 1923,
     # 2517,
     # 2847,
-    4569,
-    5822,
-    6537,
-    7131,
-    7302,
-    7319,
+    # 4569,
+    # 5822,
+    # 6537,
+    # 7131,
+    # 7302,
+    # 7319,
     # 7635,
     # 7698,
-    # 7827,
+    7827,
     # 7842,
     # 7890,
     # 7926,
@@ -91,19 +114,6 @@ def format_preimages_magma_function(d):
         the_lines = magma_file.read().splitlines()
 
     return nl.join(the_lines) + nl + f"main({d});"
-
-
-# def pad_one_list(count_list, max_val):
-
-#     for i in range(1,max_val + 1):
-#         if i not in count_list:
-
-
-# def add_padding(unique_count_dict):
-
-#     largest_isogeny_count = max([a[1] for a in unique_count_dict.values()])
-#     print(f"You need {largest_isogeny_count+2} columns in the table")
-#     return {d: pad_one_list(unique_count_dict[d], largest_isogeny_count) for d in LPIP}
 
 
 def print_master_table(ans_dicts):
@@ -185,14 +195,15 @@ def process_hyperelliptic(d, K_gen, hyperelliptic_vals):
         else:
             # 37 requires special handling
             if EllipticCurve("37b1").quadratic_twist(d).analytic_rank() == 0:
-                if (
-                    eval(
-                        str(magma.eval(format_preimages_magma_function(d))).split(
-                            chr(10)
-                        )[-1]
-                    )
-                    == 4
-                ):
+                # if (
+                #     eval(
+                #         str(magma.eval(format_preimages_magma_function(d))).split(
+                #             chr(10)
+                #         )[-1]
+                #     )
+                #     == 4
+                # ):
+                if True:
                     # then we only have the two Q-rational j-invariants
                     isog_count = 2
                     j_inv_list = [-162677523113838677, -9317]
