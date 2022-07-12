@@ -33,24 +33,13 @@ def try_trbovic_filter(d, N):
 # The following does the verification
 
 
-def verify_prop_6pt1():
+def verify_prop_5pt2():
 
     vals213 = [26, 30, 35, 39, 40, 48, 50]
-
-    vals438 = [26, 28, 30, 35, 39, 48, 50]
 
     print("Doing verification for Qsqrt213\n")
 
     for N in vals213:
-        N = Integer(N)
-        if not try_trbovic_filter(438, N):
-            print(f"{N} : trbovic_filter")
-        else:
-            print(f"{N} is bad")
-
-    print("\nDoing verification for Qsqrt438\n")
-
-    for N in vals438:
         N = Integer(N)
         if not try_trbovic_filter(438, N):
             print(f"{N} : trbovic_filter")

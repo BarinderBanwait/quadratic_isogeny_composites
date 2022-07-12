@@ -14,8 +14,6 @@ from timeout import timeout, TimeoutError
 logger = logging.getLogger(__name__)
 ISOGENY_CLASS_TIMEOUT_S = 30
 
-# def handler(signum, frame):
-#     raise TimeoutError("end of time")
 
 def isogeny_degrees(j, K=None):
     """This function was suggested to us by John Cremona - thanks John!"""
@@ -46,6 +44,7 @@ def isogeny_class_via_gp(j, K, d):
     expect_quitall()
     return jInvs, M_matrix
 
+
 @timeout(ISOGENY_CLASS_TIMEOUT_S)
 def attempt_gp_comp(j, K, d):
     try:
@@ -55,8 +54,11 @@ def attempt_gp_comp(j, K, d):
     except TimeoutError:
         # now we really can't do anything more
         logger.info("PARI/GP took too long; assuming no unrecorded isogenies "
-        "here, but you should check this directly in PARI.")
+        "here, but you should check this directly in GP with the script in "
+        "the `gp_code` folder."
+        )
         return None, None
+
 
 @timeout(ISOGENY_CLASS_TIMEOUT_S)
 def timed_isogeny_class(E):
@@ -129,14 +131,3 @@ def unrecorded_isogenies(K, my_js, d, z=None, cm=False):
         unrecorded_isogeny_degrees[k] = len(j_invs_admitting_this_deg)
 
     return unrecorded_isogeny_degrees, failed_dict
-
-
-# If isogeny computations fail, the following is how you can do it directly
-# in PARI/GP.
-
-# K = nfinit(a ^ 2 - 213)
-# myJ = Mod(123 + 456 * a, a ^ 2 - 5)
-# v = ellfromj(myJ)
-# E = ellinit(v, K)
-# [L, M] = ellisomat(E, 1)
-# test = ellinit(L[1]).j

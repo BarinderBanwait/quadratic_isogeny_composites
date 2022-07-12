@@ -378,7 +378,7 @@ def check_mwgp_same_plus(p, d):
     return False
 
 
-def search_convenient_d(d_start, d_end):
+def search_convenient_d_slow(d_start, d_end):
     """Searches in a range of d for whether or not d is convenient, as defined
     in Section 3 of the paper
     """
@@ -398,7 +398,7 @@ def search_convenient_d(d_start, d_end):
                             print("d = {} is good".format(d))
 
 
-def search_convenient_d_fast(B=None):
+def search_convenient_d(B=None):
     """As explained in a docstring above, Sage struggles to compute ranks,
     sometimes even giving a SignalError! For this reason, a Magma computation
     was run to determine, for -500 < d < 500, which of the genus 1 modular curves
@@ -520,16 +520,4 @@ def very_convenient_vals():
                 if not hard_vals:
                     really_convenient.append(d)
                     print(f"{d} is really convenient!")
-
-                # if hard_vals == [37]:
-                #     if is_rank_of_twist_zero_minus(37, kronecker_character(d)):
-                #         print("d = {} is really convenient".format(d))
-                #     elif check_mwgp_same_plus(37, d):
-                #         if not try_oezman_sieve(d, 37):
-                #             print("d = {} is really convenient".format(d))
-
-                # print(f"hard_vals={hard_vals}\n")
     return really_convenient
-
-
-# -6846, -2289, 213, 834, 1545, 1885, 1923, 2517, 2847, 4569, 5822, 6537, 7131, 7302, 7319, 7635, 7698, 7827, 7842, 7890, 7926, 7971, 8187, 8383, 8922, 9066, 9147, 9195, 9399, 9474, 9498, 9563, 9759, 9903, 9942
