@@ -80,7 +80,15 @@ def attempt_gp_comp(j, K, d):
         "the `gp_code` folder."
         )
         return None, None
-
+    except Exception:
+        # Again, if PARI/GP fails, then nothing more that can be done here
+        # except to ask the user to verify this directly in GP
+        # because it's likely to be an issue with the Sage/GP interface 
+        logger.info("PARI/GP failed; assuming no unrecorded isogenies "
+        "here, but you should check this directly in GP with the script in "
+        "the `gp_code` folder."
+        )
+        return None, None
 
 @timeout(ISOGENY_CLASS_TIMEOUT_S)
 def timed_isogeny_class(E):

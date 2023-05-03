@@ -15,6 +15,6 @@ E = ellinit(v, K);
 Here is the same code in a convenient one-liner, in case your version of
 gp also suffers from a readline issue where parentheses get stacked at the end.
 
-D = 4569;K = nfinit(a ^ 2 - D);myJ = Mod(-140625/8, a ^ 2 - D);v = ellfromj(myJ);E = ellinit(v, K);[L, M] = ellisomat(E, 1);M
+D = 6537;K = nfinit(a ^ 2 - D);myJ = Mod(3375/2, a ^ 2 - D);v = ellfromj(myJ);E = ellinit(v, K);[L, M] = ellisomat(E, 1);M
 
 */

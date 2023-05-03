@@ -52,39 +52,40 @@ QUADRATIC_POINTS_DATA_PATH = "quadratic_points_catalogue.json"
 # from utils.py
 
 D_VALUES = [
-    # -6846,
-    # -2289,
-    # 213,
-    # 834,
-    # 1545,
-    # 1885,
-    # 1923,
-    # 2517,
-    # 2847,
-    # 4569,
-    # 5822,
-    # 6537,
-    # 7131,
-    # 7302,
-    # 7319,
-    # 7635,
-    # 7698,
-    7827,
-    # 7842,
-    # 7890,
-    # 7926,
-    # 7971,
-    # 8383,
-    # 8922,
-    # 9066,
-    # 9147,
-    # 9195,
-    # 9399,
-    # 9474,
-    # 9563,
-    # 9759,
-    # 9903,
-]
+    -6846,
+ -2289,
+ 213,
+ 834,
+ 1545,
+ 1885,
+ 1923,
+ 2517,
+ 2847,
+ 4569,
+ 6537,
+ 7131,
+ 7302,
+ 7319,
+ 7635,
+ 7890,
+ 8383,
+ 9563,
+ 9903
+ ]
+
+EC_Q_ISOG_DICT = {
+    11:3,
+    14:2,
+    15:4,
+    17:2,
+    19:1,
+    21:4,
+    27:1,
+    37:2,
+    43:1,
+    67:1,
+    163:1
+}
 
 with open(QUADRATIC_POINTS_DATA_PATH, "r") as qdpts_dat_file:
     qdpts_dat = json.load(qdpts_dat_file)
@@ -116,13 +117,24 @@ def format_preimages_magma_function(d):
     return nl.join(the_lines) + nl + f"main({d});"
 
 
+def remove_rational_isogenies(ans):
+
+    output = ans.copy()
+
+    for k,v in ans.items():
+        if v != +Infinity:
+            output[k] = v - EC_Q_ISOG_DICT.get(k,0)
+
+    return output
+
+
 def print_master_table(ans_dicts):
 
     unique_count_dict = {
         d: sorted(list(set(ans_dicts[d].values())), reverse=True) for d in D_VALUES
     }
     largest_isogeny_count = max([a[1] for a in unique_count_dict.values()])
-    print(f"You need {largest_isogeny_count+2} columns in the table")
+    logging.info(f"You need {largest_isogeny_count+2} columns in the table")
     unique_counts = list(range(1, largest_isogeny_count + 1)) + [+Infinity]
     unique_counts.sort(reverse=True)
 
@@ -376,8 +388,6 @@ def quadratic_kenku_solver(d):
 
     elliptic_count_dict = {k: len(elliptic_jInv_dict[k]) for k in elliptic_jInv_dict}
 
-    print(f"A ell count dict is {elliptic_count_dict}")
-
     elliptic_unrecorded_isogenies_dict = {}
     for k in elliptic_count_dict:
         unrecorded_isogenies_dict, elliptic_failed_dict = unrecorded_isogenies(
@@ -389,11 +399,8 @@ def quadratic_kenku_solver(d):
         }
         failed_dict = {**elliptic_failed_dict, **failed_dict}
 
-    print(f"B ell unrecorded is {elliptic_unrecorded_isogenies_dict}")
     elliptic_count_dict = {**elliptic_count_dict, **elliptic_unrecorded_isogenies_dict}
-    print(f"C ell count dict is {elliptic_count_dict}")
     logging.info("Done elliptic values!")
-    return {}, {}
 
     logging.info("Starting hyperelliptic values ...")
     hyperelliptic_count_dict, hyperelliptic_failed_dict = process_hyperelliptic(
@@ -409,9 +416,6 @@ def quadratic_kenku_solver(d):
     ) = process_non_hyperelliptic(d, K_gen, my_non_hyperelliptic_vals)
     failed_dict = {**non_hyperelliptic_failed_dict, **failed_dict}
     logging.info("Done non-hyperelliptic values!")
-
-    print(f"hyperelliptic_count = {hyperelliptic_count_dict}")
-    print(f"non_hyperelliptic_count = {non_hyperelliptic_count_dict}")
 
     cm_jinvs = cm_j_invariants(K)
 
@@ -443,10 +447,17 @@ if __name__ == "__main__":
     logging.debug("Debugging level for log messages set.")
     latex_entries = []
     ans_dicts = {}
+    failed_dicts = {}
     for d in D_VALUES:
         ans, failed_dict = quadratic_kenku_solver(d)
-        ans_dicts[d] = ans
         logging.info(f"final answer for {d} is {ans}")
         logging.info(f"failed dict for {d} is {failed_dict}")
-
+        failed_dicts[d] = list(failed_dict.keys())
+        ans_dicts[d] = remove_rational_isogenies(ans)
+    if failed_dicts:
+        logging.warning(("The following shows, for each d, the j-invariants of elliptic curves over Qsqrt(d) "
+                    "for which isogeny graph computation failed. These should be recomputed by the user "
+                    "directly in PARI/GP. Code to do this can be found in the gp_scripts folder."))
+        logging.warning(failed_dicts)
+    logging.info("The rest of the logging is just packaging the results into a TeX-formatted table")
     print_master_table(ans_dicts)

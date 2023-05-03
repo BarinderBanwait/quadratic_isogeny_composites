@@ -421,7 +421,7 @@ def search_convenient_d_slow(d_start, d_end):
                             print("d = {} is good".format(d))
 
 
-def search_convenient_d(B=None):
+def search_convenient_d(use_LPIP=False):
     """As explained in a docstring above, Sage struggles to compute ranks,
     sometimes even giving a SignalError! For this reason, a Magma computation
     was run to determine, for -500 < d < 500, which of the genus 1 modular curves
@@ -436,9 +436,9 @@ def search_convenient_d(B=None):
     """
     convenient_count = 0
 
-    if B is not None:
+    if use_LPIP:
         rank_data_dict_filt = {
-            k: rank_data_dict[k] for k in rank_data_dict if k.abs() < B
+            k: rank_data_dict[k] for k in rank_data_dict if k in LPIP
         }
     else:
         rank_data_dict_filt = rank_data_dict
@@ -481,7 +481,18 @@ def very_convenient_vals():
     """
     really_convenient = []
 
-    rank_data_dict_filt = {k: rank_data_dict[k] for k in LPIP}
+    # First get the convenient values
+
+    with open("convenient_values.txt", "r") as the_file:
+        convenient_vals_dump = the_file.read().splitlines()
+
+    convenient_vals = [Integer(a_line.split(":")[0]) for a_line in convenient_vals_dump]
+
+    # We then proceed only with the data for these convenient values
+    rank_data_dict_filt = {k: rank_data_dict[k] for k in convenient_vals}
+
+    # We now go through these values and look for the very convenient ones
+    # for which we can solve quadratic Kenku
 
     for d, pre_rank_zero_list in rank_data_dict_filt.items():
         print(f"Checking if {d} is really convenient ...")
